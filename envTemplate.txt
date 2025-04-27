@@ -14,15 +14,17 @@ REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
 #https://console.cloud.google.com/apis/credentials
-# create a new project, go to credentials, copy the google client id and secret.
+# create a new project, go to credentials, create OAuth clientId
 # scroll down to Authorized redirect URIs and add the server ip port and than /auth/callback/google
 # so for dev it should be http://localhost:80/auth/callback/google
+# copy the google client id and secret.
 GOOGLE_CLIENT_ID=xxxxxxx
 GOOGLE_CLIENT_SECRET=xxxxxxx
 
 #https://github.com/settings/developers
-# create a new OAuth app, you can leave homepage url as an empty space, callback url should be ip port and than /auth/callback/github
-# so for dev it should be http://localhost:80/auth/callback/github
+# create a new OAuth app, homepage url can be http://localhost:80/auth/callback/github
+# callback url should be ip port and than /auth/callback/github, so for dev it should be http://localhost:80/auth/callback/github
+# than just copy the client id and secret
 GITHUB_CLIENT_ID=xxxxxxx
 GITHUB_CLIENT_SECRET=xxxxxxx
 
@@ -57,8 +59,9 @@ DISCORD_CLIENT_SECRET=xxxxxxx
 # X_CLIENT_ID=a
 # X_CLIENT_SECRET=a
 
-#node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+#node -e "console.log(require('crypto').randomBytes(96).toString('base64'))"
 # paste the result in the JWT_SECRET
 JWT_SECRET=xxxxxxx
 
 # DATABASE_URL="provider://user:password@host:port/database"
+# example: DATABASE_URL="mysql://root:@localhost:3306/test"

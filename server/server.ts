@@ -232,3 +232,9 @@ replInstance.context.deleteSession = async (token: string) => {
   const result = await deleteSession(token)
   console.log(result)
 }
+
+replInstance.context.commands = () => {
+  console.log('commands:')
+  console.log('getSession(token) -- if no token provided then it will return all sessions')
+  console.log('deleteSession(token) -- if no token provided then it will delete all sessions')
+}
