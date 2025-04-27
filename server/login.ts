@@ -105,7 +105,7 @@ const loginWithCredentials = async (params: paramsType) => {
     //* if the password matches we return the user
     if (checkPasswordResponse) {
       const newToken = randomBytes(32).toString("hex")
-      await saveSession(newToken, { 
+      const newUser = { 
         id: findUserResponse.id,
         name: findUserResponse.name,
         provider: 'credentials',
@@ -114,7 +114,9 @@ const loginWithCredentials = async (params: paramsType) => {
         updatedAt: findUserResponse.updatedAt,
         token: newToken,
         avatar: undefined
-      });
+      };
+      await saveSession(newToken, newUser);
+      console.log(newUser);
       return { status: true, reason: 'user logged in', newToken };
     }
   }
@@ -137,7 +139,6 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     console.log('no code provided in callback url')
     return false 
   }
-  console.log('code: ', code)
 
   const values = {
     code,
@@ -146,8 +147,6 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     redirect_uri: provider.callbackURL,
     grant_type: 'authorization_code'
   }
-
-  console.log(values) //* log the values to the terminal
 
   //* with the code we can get the access token
   const getToken = async () => {
@@ -191,15 +190,11 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     return false;
   }
 
-  console.log('getTokenResponse: ')
-  console.log(getTokenResponse)
-
   //* here we get the access token
   const { access_token, id_token } = getTokenResponse;
   const getUserData = async () => {
     // const url = `${provider.userInfoURL}?alt=json&access_token=${access_token}`;
     const url = provider.userInfoURL;
-    console.log(url)
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -217,9 +212,6 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     console.log(getUserDataError);
     return false;
   }
-
-  console.log('getUserDataResponse: ')
-  console.log(getUserDataResponse)
 
   const name: string = getUserDataResponse[provider.nameKey] || 'didnt find a name'
 
