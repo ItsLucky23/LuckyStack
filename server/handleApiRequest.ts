@@ -63,7 +63,6 @@ const scanDirectory = async ({ file }: { file: string }) => {
       }
     }
   }
-  console.log(apis)
 }
 
 export const initializeApis = async () => {
