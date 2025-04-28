@@ -3,10 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import 'src/index.css'
-import { loadClientSyncFunctions } from 'src/functions/serverRequest'
+import { loadClientSyncFunctions } from 'src/_functions/serverRequest'
 import VConsole from 'vconsole';
 import { dev } from 'src/config'
-import UpdateLocation from 'src/components/updateLocation'
+import UpdateLocation from 'src/_components/updateLocation'
 
 const getRoutes = (pages: Record<string, { default: React.ComponentType }>) => {
   const routes = [];

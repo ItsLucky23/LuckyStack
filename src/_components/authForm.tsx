@@ -2,7 +2,7 @@
 //* all logic is handled by the loginButton component
 
 import { useRef } from "react";
-import LoginButton from "src/components/loginButton";
+import LoginButton from "src/_components/loginButton";
 import { Link } from "react-router-dom";
 import { providers } from "src/config"
 

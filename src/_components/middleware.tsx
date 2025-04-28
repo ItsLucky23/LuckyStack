@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
-import { apiRequest } from "src/functions/serverRequest";
+import { apiRequest } from "src/_functions/serverRequest";
 // import middlewareHandler from "src/functions/middlewareHandler";
-import middlewareHandler from "src/functions/middlewareHandler"
+import middlewareHandler from "src/_functions/middlewareHandler"
 import { useLocation, useNavigate } from "react-router-dom";
 import { sessionLayout } from "src/config";
 

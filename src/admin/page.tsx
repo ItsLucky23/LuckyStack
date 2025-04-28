@@ -1,5 +1,5 @@
-import Middleware from "src/components/middleware";
-import Navbar from "src/components/Navbar";
+import Middleware from "src/_components/middleware";
+import Navbar from "src/_components/Navbar";
 
 
 export default function Home() {

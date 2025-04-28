@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { apiRequest } from "src/functions/serverRequest"
+import { apiRequest } from "src/_functions/serverRequest"
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { sessionLayout } from "src/config";

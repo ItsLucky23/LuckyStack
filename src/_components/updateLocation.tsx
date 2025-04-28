@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { updateLocationRequest } from 'src/functions/serverRequest';
-import { updateNavbar } from 'src/components/Navbar';
+import { updateLocationRequest } from 'src/_functions/serverRequest';
+import { updateNavbar } from 'src/_components/Navbar';
 
 export default function UpdateLocation() {
   const location = useLocation();

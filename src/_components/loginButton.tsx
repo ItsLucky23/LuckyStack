@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner'
-import tryCatch from 'src/functions/tryCatch';
+import tryCatch from 'src/_functions/tryCatch';
 import config from 'src/config';
 
 interface LoginButtonType {

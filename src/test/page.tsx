@@ -1,6 +1,6 @@
-import Navbar from "src/components/Navbar";
-import { apiRequest, syncRequest } from "src/functions/serverRequest";
-import Middleware from "src/components/middleware";
+import Navbar from "src/_components/Navbar";
+import { apiRequest, syncRequest } from "src/_functions/serverRequest";
+import Middleware from "src/_components/middleware";
 import { toast } from "sonner";
 
 export default function App() {

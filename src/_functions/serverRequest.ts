@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import { io, Socket } from 'socket.io-client';
-import tryCatch from 'src/functions/tryCatch';
+import tryCatch from 'src/_functions/tryCatch';
 import config, { dev, backendUrl } from "src/config";
 
 let socket: Socket | null = null;
