@@ -11,14 +11,12 @@ export default function Middleware({ children }: { children: ReactNode }) {
 
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     let isMounted = true;
 
     void (async () => {
       const session = await apiRequest({ name: 'session' }) as sessionLayout;
       const result = middlewareHandler({ location: location.pathname, session }) as { success: boolean, redirect: string } | undefined;
-      console.log(result, ' result');
 
       if (!isMounted) return;
 

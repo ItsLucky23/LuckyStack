@@ -32,7 +32,7 @@ const navbarItems = [
           )}
         </>
       );
-    }
+    },
   },
   {
     icon: 'close_fullscreen',
@@ -50,43 +50,21 @@ const navbarItems = [
     },
     hideOnExpended: true
   },
-
   {
     icon: 'home',
     label: 'Test',
     path: '/test'
   },
   {
+    icon: 'settings',
+    label: 'Settings',
+    path: '/settings'
+  },
+  {
     icon: 'admin_panel_settings',
     label: 'Admin',
     path: '/admin'
   },
-
-  // {
-  //   icon: 'groups',
-  //   label: 'Groups',
-  //   path: '/groups'
-  // },
-  // {
-  //   icon: 'search',
-  //   label: 'Search',
-  //   path: '/search' 
-  // },
-  // {
-  //   icon: 'settings',
-  //   label: 'Settings',
-  //   path: '/settings' 
-  // },
-  // {
-  //   icon: 'star',
-  //   label: 'Star',
-  //   path: '/star' 
-  // },
-  // {
-  //   icon: 'add',
-  //   label: 'Add',
-  //   path: '/add' 
-  // },
   {
     icon: 'logout',
     label: 'Logout',
@@ -201,7 +179,8 @@ const NavbarItem = ({ item, state, setState, pathname, session, router }: Navbar
       if (item.action) { item.action({ item, state, setState, pathname, session, router }) }
       else if (item.path) { 
         clearPopups();
-        void router(item.path) 
+        void router(item.path);
+        setState('folded');
       }
     }}>
       {item.init ? 
@@ -228,6 +207,7 @@ export default function Navbar() {
 
   const [state, setState] = useState<'folded' | 'expended'>('folded');
   const [session, setSession] = useState<sessionLayout>({}); // use proper type if you have one
+  const [windowSize, setWindowSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
   const location = useLocation();
   const router = useNavigate();
 
@@ -254,33 +234,63 @@ export default function Navbar() {
     clearPopups();
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize(); 
+  }, [])
+
   return (
     <>
-      <div className={`h-full bg-gray-100 text-gray-500 flex flex-col items-center py-4 transition-all duration-200 px-2 absolute z-20 md:z-0 md:relative
+      {windowSize.width < 768 &&
+        <>
+          <div className="w-full py-2 px-4 bg-gray-100 text-black flex justify-between items-center">
+            <div className="flex gap-2 items-center">
+              <img src={session.avatar} className="max-w-8 max-h-8 rounded-full"></img>
+              <h1>{session.name}</h1>
+            </div>
+            <div className="">
+            <span 
+              style={{ fontSize: '22px', fontWeight: 'lighter' }}
+              className={`material-icons select-none`}
+              onClick={() => {
+                const value = state == 'expended'? 'folded' : 'expended';
+                setState(value)
+              }}>
+              menu
+            </span>
+            </div>
+          </div>
+        </>
+      }
+      <div className={`h-full bg-gray-100 text-gray-500 flex flex-col items-center md:py-4 transition-all duration-200 md:px-2 absolute z-20 md:z-0 md:relative
         ${state == 'folded' ? 
-          'w-14 gap-3' : 
-          'w-64 gap-1'
+          'md:w-14 w-0 gap-3' : 
+          'w-64 gap-1 px-2'
         }`}>
 
-          {navbarItems.map((item, index) => {
+          {(windowSize.width >= 768 || state == 'expended') && navbarItems.map((item, index) => {
 
             const shouldRender = item.init ? true :
               item.icon && item.label ? true :
               false;
 
-            console.log(shouldRender)
             if (!shouldRender) return null;
 
             return <NavbarItem key={index} pathname={location.pathname} item={item} state={state} setState={setState} session={session} router={router}/>
           })}
 
       </div>
-      {state == 'expended' && (
-        <div className={`md:hidden flex absolute top-0 left-0 z-10 bg-black opacity-80 w-full h-full`}
-          onClick={() => { setState('folded') }}>
-          
-        </div>
-      )}
+      <div className={`md:hidden flex absolute top-0 left-0 z-10 bg-black ${state != 'folded' ? 'opacity-80' : 'opacity-0 pointer-events-none'} transition-all duration-300 w-full h-full`}
+        onClick={() => { setState('folded') }}>
+      </div>
     </>
   )
 }

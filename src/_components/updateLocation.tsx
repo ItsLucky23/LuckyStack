@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { updateLocationRequest } from 'src/_functions/serverRequest';
 import { updateNavbar } from 'src/_components/Navbar';
+import TemplateProvider from 'src/_components/templateProvider'
 
 export default function UpdateLocation() {
   const location = useLocation();
@@ -24,8 +25,8 @@ export default function UpdateLocation() {
 
   //* Outlet is all the child components in the browser router
   return (
-    <>
+    <TemplateProvider>
       <Outlet />
-    </>
+    </TemplateProvider>
   );
 }
