@@ -21,7 +21,7 @@ type ApiParams = {
 
 const auth = {
   login: true, // if true than it will check if your session data contains the values you get when logging in, the values that are on default applied to your session are stored in the config.ts file in the userData array 
-  aditional: [ // you can add aditional checks to your session, below we check if the user that called the api is an admin
+  additional: [ // you can add additional checks to your session, below we check if the user that called the api is an admin
     // { key: 'admin', value: true }
   ]
 }

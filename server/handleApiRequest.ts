@@ -49,7 +49,7 @@ const scanDirectory = async ({ file }: { file: string }) => {
           }
 
           newApi.auth.login = newApi.auth.login || false;
-          newApi.auth.aditional = newApi.auth.aditional || [];
+          newApi.auth.additional = newApi.auth.additional || [];
 
           apis[`api-${pageLocation}-${name}`] = newApi;
         
@@ -105,18 +105,18 @@ export default async function handleApiRequest({ name, data, user }: handleApiRe
     }
   }
 
-  //* if the aditional key is an array we check if the following
+  //* if the additional key is an array we check if the following
   //* if it has a key and a type we check if the user has the key and if the value is of the correct type
   //* if it has a key and a value we check if the user has the key and if the value is the same as the given value
   //* examples:
   //* { key: 'admin', type: 'boolean' } -> checks if the user has the key admin and if the value is of type boolean
   //* { key: 'admin', value: true } -> checks if the user has the key admin and if the value is true   
-  if (auth.aditional) {
-    for (const aditional of auth.aditional) {
-      if (!aditional?.key || (!aditional?.type && !aditional?.value)) { continue; }
-      if (!user?.[aditional.key]) { return { message: `found user doesnt have the right ${aditional.key} value`, error: true } }
-      if (aditional.type && typeof user[aditional.key] != aditional.type) { return { message: `found user doesnt have the right ${aditional.key} value`, error: true } }
-      if (aditional.value && user[aditional.key] != aditional.value) { return { message: `found user doesnt have the right ${aditional.key} value`, error: true } }
+  if (auth.additional) {
+    for (const additional of auth.additional) {
+      if (!additional?.key || (!additional?.type && !additional?.value)) { continue; }
+      if (!user?.[additional.key]) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
+      if (additional.type && typeof user[additional.key] != additional.type) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
+      if (additional.value && user[additional.key] != additional.value) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
     }
   }
   

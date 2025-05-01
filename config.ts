@@ -181,7 +181,7 @@ const oauthProviders: oauthProvidersProps[] = [
   // },
 ];
 
-// the data that every user should have, for example some systems have an admin value that is optional so we dont add admin but in an api request you can add this in aditional 
+// the data that every user should have, for example some systems have an admin value that is optional so we dont add admin but in an api request you can add this in additional 
 // only remove the id, email or provider if you know what you are doing because they are used to identify the user (e.g email and provider identifitcation allow for mutliple accounts with the same email for example your google and facebook account)
 export const userdata = [
   'id',
