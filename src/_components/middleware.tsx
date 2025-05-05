@@ -44,5 +44,5 @@ export default function Middleware({ children }: { children: ReactNode }) {
   if (checking) return <div>Checking access...</div>;
   if (!allowed) return null;
 
-  return <>{children}</>;
+  return <div className="w-full h-full">{children}</div>;
 }

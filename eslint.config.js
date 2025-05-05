@@ -58,3 +58,4 @@ export default tseslint.config(
   }
 )
 //npx eslint src/**/*.tsx
+// ctrl + shift + p -> Restart TS server

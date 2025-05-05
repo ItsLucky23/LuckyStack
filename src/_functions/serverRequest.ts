@@ -61,9 +61,15 @@ const logout = async () => {
 }
 
 let responseIndex = 0;
-type apiRequestType = {
+interface apiRequestType {
   name: string;
-  data?: object | null;
+  data?: object;
+}
+
+export interface apiRequestReponse {
+  status: 'success' | 'error' | any;
+  result?: Record<string, any> | any;
+  message?: string;
 }
 
 export const apiRequest = ({ name, data }: apiRequestType) => {
@@ -79,10 +85,10 @@ export const apiRequest = ({ name, data }: apiRequestType) => {
     if (name == 'logout') { return resolve(await logout()); }
 
     if (!data || typeof data !== "object") {
-      if (dev && name != 'session') {
-        console.info("Empty data, sending an empty object instead");
-        toast.info("Empty data, sending an empty object instead");
-      }
+      // if (dev && name != 'session') {
+      //   console.info("Empty data, sending an empty object instead");
+      //   toast.info("Empty data, sending an empty object instead");
+      // }
       data = {};
     }
   
@@ -106,10 +112,10 @@ export const apiRequest = ({ name, data }: apiRequestType) => {
       const abortController = new AbortController();
       abortControllers.set(fullname, abortController);
       abortFunc = () => {
-        if (dev) {
-          console.info(`Request ${fullname} aborted`);
-          toast.info(`Request ${fullname} aborted`);
-        }
+        // if (dev) {
+        //   console.info(`Request ${fullname} aborted`);
+        //   toast.info(`Request ${fullname} aborted`);
+        // }
         if (signal) { signal.removeEventListener("abort", abortFunc); }
         reject(`Request ${fullname} aborted`)
       };
@@ -118,8 +124,9 @@ export const apiRequest = ({ name, data }: apiRequestType) => {
       signal.addEventListener("abort", abortFunc);
     }
 
-    console.log(`apiRequest: ${fullname}, data ->`);
-    console.log(data);
+    // console.log(`apiRequest: ${fullname}, data ->`);
+    // console.log(data);
+    console.log({ name: fullname, data });
     responseIndex++;
     socket.emit('apiRequest', { name: fullname, data, responseIndex });
   
@@ -133,10 +140,14 @@ export const apiRequest = ({ name, data }: apiRequestType) => {
           console.error('message:', message);
           toast.error(message);
         }
-        return reject(error);
+        // return reject(error);
+        return resolve({
+          status: 'error',
+          message
+        })
       }
   
-      if (dev) { console.log(result) }
+      if (dev) { console.log({ apiName: fullname, ...result }) }
   
       if (signal) {
         signal.removeEventListener("abort", abortFunc);
@@ -234,10 +245,10 @@ export const syncRequest = async ({ name, data }: syncRequestType) => {
   }
 
   if (!data || typeof data !== "object") {
-    if (dev) {
-      console.info("no data for syncRequest, sending an empty object instead");
-      toast.info("no data for syncRequest, sending an empty object instead");
-    }
+    // if (dev) {
+    //   console.info("no data for syncRequest, sending an empty object instead");
+    //   toast.info("no data for syncRequest, sending an empty object instead");
+    // }
     data = {};
   }
 

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-type Functions = {
+interface Functions {
   prisma: PrismaClient;
 
   saveSession: (sessionId: string, data: any) => Promise<boolean>;
@@ -12,7 +12,7 @@ type Functions = {
   [key: string]: any; // allows for other functions that are not defined as a type but do exist in the functions folder
 };
 
-type ApiParams = {
+interface ApiParams {
   data: Record<string, any>;
   functions: Functions;
   user: Record<string, any>;

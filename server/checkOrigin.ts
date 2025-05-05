@@ -23,6 +23,12 @@ const allowedOrigin = (origin: string) => {
   if (location == urlWithPort443 && process.env.SECURE == 'true') { return true; }
   if (location == urlWithPort80 && process.env.SECURE != 'true') { return true; }
 
+  console.log('origin not allowed')
+  console.log(origin)
+  console.log(formattedOrigin)
+  console.log(location)
+  console.log(urlWithPort443)
+  console.log(urlWithPort80)
   return false;
 }
 
