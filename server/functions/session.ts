@@ -6,7 +6,8 @@ const saveSession = async (sessionId: string, data: Record<string, any>) => {
   return true;
 };
 
-const getSession = async (sessionId: string) => {
+const getSession = async (sessionId: string | null) => {
+  if (!sessionId) return {};
   const session = await redis.get(sessionId) || "{}";
   return session ? JSON.parse(session) : {};
 };

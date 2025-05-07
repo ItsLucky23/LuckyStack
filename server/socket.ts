@@ -75,7 +75,7 @@ export default function loadSocket(httpServer: any) {
 
       const { name, data, responseIndex } = msg;
       // if (!token) { return socket.emit('message', 'no token provided') }
-      const user = await getSession(token || '')
+      const user = await getSession(token)
 
       //* if the name of the apiRequest is 'session' we return the users session data else we check if there is an api with this name
       if (name == 'session') {
@@ -131,7 +131,7 @@ export default function loadSocket(httpServer: any) {
         //* check if they have a cookie that holds an token, if not we skip this client
         const tempCookie = tempSocket[1].handshake.headers.cookie;
 
-        const tempToken = tempCookie ? tempCookie.split("=")[1] : ''; 
+        const tempToken = tempCookie ? tempCookie.split("=")[1] : null; 
         // if (!tempToken) { continue }
 
         //* here we get the users session of the client and run the sync function with the data and the users session data

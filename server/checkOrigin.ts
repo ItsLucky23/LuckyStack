@@ -1,10 +1,7 @@
 const allowedOrigin = (origin: string) => {
   const location = `http${process.env.SECURE == 'true'?'s' : ''}://${process.env.SERVER_IP}:${process.env.SERVER_PORT}/`;
-  const formattedOrigin = origin.includes('://') ? origin : `http://${origin}/`;
+  const formattedOrigin = origin.includes('://') ? origin : `http${process.env.SECURE == 'true' ? 's' : ''}://${origin}/`;
     
-  // console.log(location, ' server location')
-  // console.log(formattedOrigin, ' formatted origin')
-
   //* we check if the origin of the user is allowed to access the server directly
   if (location == formattedOrigin) { return true; } 
 
@@ -18,10 +15,16 @@ const allowedOrigin = (origin: string) => {
   const parsedUrl = new URL(formattedOrigin);
   const urlWithPort80 = `${parsedUrl.protocol}//${parsedUrl.hostname}:80${parsedUrl.pathname}`;
   const urlWithPort443 = `${parsedUrl.protocol}//${parsedUrl.hostname}:443${parsedUrl.pathname}`;
-  // console.log(urlWithPort443, ' url with port 443')
-  // console.log(urlWithPort80, ' url with port 80')
+
   if (location == urlWithPort443 && process.env.SECURE == 'true') { return true; }
   if (location == urlWithPort80 && process.env.SECURE != 'true') { return true; }
+
+  const externalOrigins = process.env.EXTERNAL_ORIGINS?.split(',') || [];
+  for (const externalOrigin of externalOrigins) {
+    if (formattedOrigin == externalOrigin) { return true; }
+    if (urlWithPort443 == externalOrigin && process.env.SECURE == 'true') { return true; }
+    if (urlWithPort80 == externalOrigin && process.env.SECURE != 'true') { return true; }
+  }
 
   console.log('origin not allowed')
   console.log(origin)
