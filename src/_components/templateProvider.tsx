@@ -10,14 +10,14 @@ const Templates = {
 function DashboardTemplate({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full h-full flex flex-row bg-white">
-    <Middleware>
-    <div className="w-full h-full flex flex-col md:flex-row">
-      <Navbar/>
-      <div className="md:flex-grow h-full text-black">
-        {children}
+      <div className="w-full h-full flex flex-col md:flex-row">
+        <Navbar/>
+        <div className="md:flex-grow h-full text-black">
+          <Middleware>
+            {children}
+          </Middleware>
+        </div>
       </div>
-    </div>
-    </Middleware>
     </div>
   )
 }

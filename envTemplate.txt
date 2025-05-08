@@ -13,6 +13,10 @@ SERVER_PORT=80
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
+#here you can add urls that are allowed to communicate with the server, such as oauth urls
+#when adding new urls make sure to saperate them with a ',' and at the end of the url you sometimes need to add the '/' to make it work 
+EXTERNAL_ORIGINS=https://accounts.google.com/,https://test.com
+
 #https://console.cloud.google.com/apis/credentials
 # create a new project, go to credentials, create OAuth clientId
 # scroll down to Authorized redirect URIs and add the server ip port and than /auth/callback/google

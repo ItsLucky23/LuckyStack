@@ -13,7 +13,9 @@ export default function Middleware({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   useEffect(() => {
     let isMounted = true;
-
+    setAllowed(false);
+    setChecking(true);
+    
     void (async () => {
       const session = await apiRequest({ name: 'session' }) as sessionLayout;
       const result = middlewareHandler({ location: location.pathname, session }) as { success: boolean, redirect: string } | undefined;
