@@ -159,7 +159,7 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
       
     const location = process.env.NODE_ENV == "development"?
       process.env.FRONTEND_URL || '/':
-      `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.SERVER_IP}:${process.env.SERVER_PORT}/`;
+      `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.DNS}`
 
     res.setHeader("Set-Cookie", `token=${newToken}; ${cookieOptions}`);
     res.writeHead(302, { Location: location }); // Redirect without exposing token in URL

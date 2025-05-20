@@ -37,10 +37,6 @@ type apiMessage = {
 export default function loadSocket(httpServer: any) {
 
   //* here we create the SocketIOServer instance
-  const location = process.env.NODE_ENV == "development" ?
-    process.env.FRONTEND_URL || '/':
-    `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.SERVER_IP}:${process.env.SERVER_PORT}/`;
-
   console.log('starting socket server')
   const io = new SocketIOServer(httpServer, {
     cors: { 

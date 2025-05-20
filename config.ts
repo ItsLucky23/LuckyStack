@@ -29,7 +29,8 @@ type FullProvider = {
 
 type oauthProvidersProps = | BasicProvider | (Required<FullProvider>); 
 
-const backendUrl = `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.SERVER_IP}:${process.env.SERVER_PORT}`;
+const backendUrl = process.env.NODE_ENV == 'development' ? `http://${process.env.SERVER_IP}:${process.env.SERVER_PORT}` : 
+                                                           `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.DNS}` 
 const oauthProviders: oauthProvidersProps[] = [
   {
     name: 'credentials',

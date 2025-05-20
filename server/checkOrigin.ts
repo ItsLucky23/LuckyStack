@@ -21,17 +21,22 @@ const allowedOrigin = (origin: string) => {
 
   const externalOrigins = process.env.EXTERNAL_ORIGINS?.split(',') || [];
   for (const externalOrigin of externalOrigins) {
+    if (origin == externalOrigin) { return true; }
     if (formattedOrigin == externalOrigin) { return true; }
     if (urlWithPort443 == externalOrigin && process.env.SECURE == 'true') { return true; }
     if (urlWithPort80 == externalOrigin && process.env.SECURE != 'true') { return true; }
   }
 
+  console.log('')
   console.log('origin not allowed')
-  console.log(origin)
-  console.log(formattedOrigin)
-  console.log(location)
-  console.log(urlWithPort443)
-  console.log(urlWithPort80)
+  console.log('origin:', origin)
+  console.log('formattedOrigin:', formattedOrigin)
+  console.log('location:', location)
+  console.log('urlWithPort443:', urlWithPort443)
+  console.log('urlWithPort80:', urlWithPort80)
+  for (const externalOrigin of externalOrigins) {
+    console.log('externalOrigin:', externalOrigin)
+  }
   return false;
 }
 
