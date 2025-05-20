@@ -87,6 +87,7 @@ const oauthProviders: oauthProvidersProps[] = [
   
       //* if we found the email we set it to the user object
       let mainEmail: string | undefined;
+      if (!getEmailResponse) { return false; }
       for (const email of getEmailResponse) {
         if (email.primary) { mainEmail = email.email; }
       }
