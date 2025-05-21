@@ -276,7 +276,7 @@ export default function Navbar() {
           'w-64 gap-1 px-2'
         }`}>
 
-          {(windowSize.width >= 768 || state == 'expended') && navbarItems.map((item, index) => {
+          {/* {(windowSize.width >= 768 || state == 'expended') && navbarItems.map((item, index) => {
 
             const shouldRender = item.init ? true :
               item.icon && item.label ? true :
@@ -285,7 +285,48 @@ export default function Navbar() {
             if (!shouldRender) return null;
 
             return <NavbarItem key={index} pathname={location.pathname} item={item} state={state} setState={setState} session={session} router={router}/>
-          })}
+          })} */}
+          {(windowSize.width >= 768 || state === 'expended') && (
+            <>
+              {/* Top items */}
+              {navbarItems.filter(item => !item.bottom).map((item, index) => {
+                const shouldRender = item.init || (item.icon && item.label);
+                if (!shouldRender) return null;
+
+                return (
+                  <NavbarItem
+                    key={index}
+                    pathname={location.pathname}
+                    item={item}
+                    state={state}
+                    setState={setState}
+                    session={session}
+                    router={router}
+                  />
+                );
+              })}
+
+              {/* Bottom items, inside a mt-auto wrapper */}
+              <div className="mt-auto w-full flex flex-col gap-2 items-center">
+                {navbarItems.filter(item => item.bottom).map((item, index) => {
+                  const shouldRender = item.init || (item.icon && item.label);
+                  if (!shouldRender) return null;
+
+                  return (
+                    <NavbarItem
+                      key={`bottom-${index}`}
+                      pathname={location.pathname}
+                      item={item}
+                      state={state}
+                      setState={setState}
+                      session={session}
+                      router={router}
+                    />
+                  );
+                })}
+              </div>
+            </>
+          )}
 
       </div>
       <div className={`md:hidden flex absolute top-0 left-0 z-10 bg-black ${state != 'folded' ? 'opacity-80' : 'opacity-0 pointer-events-none'} transition-all duration-300 w-full h-full`}
