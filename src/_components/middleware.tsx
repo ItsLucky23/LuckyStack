@@ -14,11 +14,7 @@ export default function Middleware({ children }: { children: ReactNode }) {
     let isMounted = true;
     setAllowed(false);
     setChecking(true);
-<<<<<<< Updated upstream
-    
-=======
 
->>>>>>> Stashed changes
     void (async () => {
       const params = new URLSearchParams(location.search);
       const queryObject: Record<string, string> = {};
