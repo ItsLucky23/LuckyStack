@@ -31,7 +31,7 @@ function PlainTemplate({ children }: { children: React.ReactNode }) {
 }
 
 type Template = 'dashboard' | 'plain';
-const TemplateContext = createContext<{ setTemplate: (template: Template) => void; }>({ setTemplate: () => {} });
+const TemplateContext = createContext<{ setTemplate: (template: Template) => void; }>({ setTemplate: () => { return; } });
 
 export function useTemplate() {
   return useContext(TemplateContext);
@@ -42,7 +42,7 @@ export default function TemplateProvider({ children }: { children: React.ReactNo
 
   return (
     <TemplateContext.Provider value={{ setTemplate }}>
-      {Templates[template]({ children })}
+      {Templates[template]({ children }) || Templates.plain({ children })}
     </TemplateContext.Provider>
   )
 }

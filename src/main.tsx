@@ -5,7 +5,7 @@ import { Toaster } from 'sonner'
 import 'src/index.css'
 import { loadClientSyncFunctions } from 'src/_functions/serverRequest'
 import VConsole from 'vconsole';
-import { dev } from 'src/config'
+import { dev } from '../config'
 import UpdateLocation from 'src/_components/updateLocation'
 
 const getRoutes = (pages: Record<string, { default: React.ComponentType }>) => {

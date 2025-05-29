@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import oauthProviders from "../config";
+import oauthProviders from "./loginConfig";
 import { IncomingMessage, ServerResponse } from 'http';
 import { URLSearchParams } from 'url';
 import { tryCatch } from './functions/tryCatch';
@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { saveSession } from "./functions/session"
 import validator from "validator"
+import config from '../config';
 
 dotenv.config();
 
@@ -21,22 +22,22 @@ type paramsType = {
 // Route that starts the OAuth flow for the specified provider and redirects to the callback endpoint
 const loginWithCredentials = async (params: paramsType) => {
 
-  const email = validator.escape(params.email);
-  const password = validator.escape(params.password);
+  const email = validator.escape(params.email || '');
+  const password = validator.escape(params.password || '');
   const name = params.name ? validator.escape(params.name) : undefined;
   const confirmPassword = params. confirmPassword ? validator.escape(params.confirmPassword) : undefined;
 
   console.log(name, email, password, confirmPassword)
   
-  if (!email || !password) { return { status: false, reason: 'no email or password provided' }; }
-  if (email.length > 191) { return { status: false, reason: 'email cant be longer than 191 characters' }; }
-  if (password.length < 8) { return { status: false, reason: 'password must be at least 8 characters long' }; }
-  if (password.length > 191) { return { status: false, reason: 'password cant be longer than 191 characters' }; }
-  if (name && name.length > 191) { return { status: false, reason: 'name cant be longer than 191 characters' }; }
-  if (!validator.isEmail(email)) { return { status: false, reason: 'Invalid email format' }; }
+  if (!email || !password) { return { status: false, reason: 'login.empty' }; }
+  if (email.length > 191) { return { status: false, reason: 'login.emailCharacterLimit' }; }
+  if (password.length < 8) { return { status: false, reason: 'login.passwordCharacterMinimum' }; }
+  if (password.length > 191) { return { status: false, reason: 'login.passwordCharacterLimit' }; }
+  if (name && name.length > 191) { return { status: false, reason: 'login.nameCharacterLimit' }; }
+  if (!validator.isEmail(email)) { return { status: false, reason: 'login.invalidEmailFormat' }; }
 
   if (name && confirmPassword) { //* register
-    if (password != confirmPassword) { return { status: false, reason: 'passwords do not match' }; }
+    if (password != confirmPassword) { return { status: false, reason: 'login.passwordNotMatch' }; }
 
     const checkEmail = async () => {
       return await prisma.user.findFirst({
@@ -50,7 +51,7 @@ const loginWithCredentials = async (params: paramsType) => {
     //* check if email already exists
     const [checkEmailError, checkEmailResponse] = await tryCatch(checkEmail);
     if (checkEmailError) { return { status: false, reason: checkEmailError }; }
-    if (checkEmailResponse) { return { status: false, reason: 'email already exists' }; }
+    if (checkEmailResponse) { return { status: false, reason: 'login.emailExist' }; }
 
     //* email is not in use so we define the function to create the new user
     const createNewUser = async () => {
@@ -61,7 +62,10 @@ const loginWithCredentials = async (params: paramsType) => {
           email: email,
           provider: PROVIDERS.credentials,
           name: name,
-          password: hashedPassword
+          password: hashedPassword,
+          avatar: '',
+          admin: false,
+          language: config.defaultLanguage
         }
       }) 
     }
@@ -69,8 +73,8 @@ const loginWithCredentials = async (params: paramsType) => {
     //* here we create the new user
     const [createNewUserError, createNewUserResponse] = await tryCatch(createNewUser);
     if (createNewUserError) { return { status: false, reason: createNewUserError }; }
-    if (createNewUserResponse) { return { status: true, reason: 'user created', userId: createNewUserResponse.id }; }
-    return { status: false, reason: 'failed to create new user' };
+    if (createNewUserResponse) { return { status: true, reason: 'login.userCreated', userId: createNewUserResponse.id }; }
+    return { status: false, reason: 'login.createUserFailed' };
 
   } else { //* login
     //* here we define the function to find the user
@@ -79,28 +83,20 @@ const loginWithCredentials = async (params: paramsType) => {
         where: {
           email: email,
           provider: PROVIDERS.credentials
-        }, select: {
-          id: true,
-          name: true,
-          email: true,
-          provider: true,
-          password: true,
-          createdAt: true,
-          updatedAt: true,
-        } 
+        }
       }) 
     }
 
     //* attempt to find the user
     const [findUserError, findUserResponse] = await tryCatch(findUser);
     if (findUserError) { return { status: false, reason: findUserError }; }
-    if (!findUserResponse) { return { status: false, reason: 'user not found' }; }
+    if (!findUserResponse) { return { status: false, reason: 'login.userNotFound' }; }
 
     //* if we found a user we check if the password matches the hashed one in the db
     const checkPassword = async () => { return await bcrypt.compare(password, findUserResponse.password as string); }
     const [checkPasswordError, checkPasswordResponse] = await tryCatch(checkPassword);
     if (checkPasswordError) { return { status: false, reason: checkPasswordError }; }
-    if (!checkPasswordResponse) { return { status: false, reason: 'password does not match' }; }
+    if (!checkPasswordResponse) { return { status: false, reason: 'login.wrongPassword' }; }
 
     //* if the password matches we return the user
     if (checkPasswordResponse) {
@@ -113,11 +109,13 @@ const loginWithCredentials = async (params: paramsType) => {
         createdAt: findUserResponse.createdAt,
         updatedAt: findUserResponse.updatedAt,
         token: newToken,
-        avatar: undefined
+        avatar: findUserResponse.avatar || '',
+        admin: findUserResponse.admin,
+        language: findUserResponse.language
       };
       await saveSession(newToken, newUser);
       console.log(newUser);
-      return { status: true, reason: 'user logged in', newToken };
+      return { status: true, reason: 'login.loggedIn', newToken };
     }
   }
 }
@@ -216,10 +214,9 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
   const name: string = getUserDataResponse[provider.nameKey] || 'didnt find a name'
 
   const email: string | undefined = getUserDataResponse[provider.emailKey];
-  const avatar: string | undefined = 
+  const avatar: string = 
     provider?.avatarKey ? getUserDataResponse[provider.avatarKey] : 
-    provider.getAvatar ? provider.getAvatar({userData: getUserDataResponse, avatarId: getUserDataResponse[provider.avatarCodeKey]}) : 
-    undefined;
+    provider.getAvatar ? provider.getAvatar({userData: getUserDataResponse, avatarId: getUserDataResponse[provider.avatarCodeKey]}) : '';
 
   const user = {
     id: '',
@@ -229,7 +226,9 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     createdAt: new Date(),
     updatedAt: new Date(),
     token: '',
-    avatar
+    avatar,
+    admin: false,
+    language: config.defaultLanguage
   }
 
   //* if we didnt find the email we try to get it with a external link if this one is provided
@@ -244,7 +243,7 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     user.email = selectedEmail;
   }
 
-  let tempUser: {id: string, createdAt: Date, updatedAt: Date} | undefined;
+  let tempUser: {id: string, createdAt: Date, updatedAt: Date, admin: boolean, language: string, avatar?: string} | undefined;
   if (user && user.email) {
     const fetchUser = async () => {
       return await prisma.user.findFirst({
@@ -274,6 +273,8 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
             email: user.email,
             provider: user.provider as PROVIDERS,
             name: user.name,
+            avatar: user.avatar,
+            language: config.defaultLanguage
           }
         })
       }
@@ -298,6 +299,9 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
   user.createdAt = tempUser.createdAt;
   user.updatedAt = tempUser.updatedAt;
   user.token = newToken;
+  user.admin = tempUser.admin
+  user.language = config.defaultLanguage;
+  if (tempUser.avatar) { user.avatar = tempUser.avatar; }
 
   await saveSession(newToken, user);
   console.log(user)

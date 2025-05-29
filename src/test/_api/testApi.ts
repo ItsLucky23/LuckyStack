@@ -20,13 +20,15 @@ interface ApiParams {
 
 
 const auth = {
-  login: true, // if true than it will check if your session data contains the values you get when logging in, the values that are on default applied to your session are stored in the config.ts file in the userData array 
+  login: true, //* checks if the user session data has values. the values the sesssion object needs to have to pass the check are stored in the config.ts file in the minimalSessionLayout array 
   additional: [ // you can add additional checks to your session, below we check if the user that called the api is an admin
     // { key: 'admin', value: true }
   ]
 }
 
 const api = async ({ data, functions, user }: ApiParams) => {
+  console.log(data)
+  console.log(functions)
   console.log(user)
   console.log('you just called the randomApi.ts')
   return { success: true, result: {} }

@@ -1,26 +1,38 @@
-import dotenv from 'dotenv';
-import { tryCatch } from './server/functions/tryCatch';
-
-dotenv.config(); // Load environment variables from .env file
-
-type BasicProvider = {
-  name: string;
+const config = {
+  backendUrl: 'http://localhost:80', //* the url of the backend server
+  dev: true, //* if true then we get extra console logs
+  loginPageUrl: '/login', //* url the client is redirected to when the user is not authenticate
+  loginRedirectUrl: '/test', //* url the client is redirected to after logging in
+  defaultLanguage: 'en', //* default language if the session data doesnt include it, this is used with the notify system with the json files in the localed folder
 }
+//* these values are optional to have in the session object, used for type declartion after an apiRequest on the client
+export type sessionLayout = Partial<{
+  id: string;
+  name: string;
+  provider: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  token: string;
+  avatar: string;
+  language: string;
+  location: {
+    pathname: string;
+    searchParams: {
+      [key: string]: string;
+    };
+  };
+}>;
 
-type FullProvider = {
-  name: string,
-  clientID: string,
-  clientSecret: string,
-  callbackURL: string,
-  authorizationURL: string,
-  tokenExchangeURL: string,
-  tokenExchangeMethod: 'json' | 'form',
-  userInfoURL: string,
-  scope: string[],
-  getEmail?: (access_token: string) => Promise<string | false | undefined>,
-  nameKey: string,
-  emailKey: string, 
+//* these values should always be in the session object
+//* they can be false but just not undefined or null
+//* if you want the user to have a default session value you need to add it here and edit the login.ts file in the server folder.
+//* most cases you want to add an optional value and you want to do this in the sessionLayout type
+//* but if you want to add a required value it needs to be done here in the minimalSessionLayout array and in the login logic in the login.ts file in the server folder
+export const minimalSessionLayout = ['id', 'name', 'provider', 'email', 'createdAt', 'updatedAt', 'token', 'avatar', 'language'];
+export const providers = ['credentials', 'google', 'github', 'facebook', 'discord'];
 
+<<<<<<< Updated upstream
   avatarKey?: string, //* the avatarKey represent the url to the img
   avatarCodeKey: string, //* the avatarCodeKey should be the key representing the avatar id if the provider doesnt give the avatar url directly, we use the getAvatar function with this value together
   // getAvatar?: (userId: number, avatarId: string) => string | undefined
@@ -193,3 +205,7 @@ export const userdata = [
 ]
 
 export default oauthProviders;
+=======
+export default config;
+export const { backendUrl, dev, loginPageUrl, loginRedirectUrl, defaultLanguage } = config;
+>>>>>>> Stashed changes

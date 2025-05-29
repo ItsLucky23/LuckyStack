@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id        String    @id @default(uuid())
   email     String
   name      String?
@@ -15,6 +15,9 @@ model User {
   provider  PROVIDERS
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  avatar    String @default("")
+  language  String @default("en")
+  admin     Boolean @default(false)
 }
 
 enum PROVIDERS {

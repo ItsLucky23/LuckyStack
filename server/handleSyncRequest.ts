@@ -1,9 +1,10 @@
 import { tryCatch } from "./functions/tryCatch";
 import fs from 'fs';
 import path from 'path';
-import { initializeFunctions, functions } from "./getFunctions";
+import { initializeFunctions, devFunctions } from "./getFunctions";
+import { syncs, functions } from "./generatedApis";
 
-const syncFunctions = {};
+// const syncs = {};
 //* here we scan the src folder for sync folders and load any file that is in a sync folder where the name ends in "_server.ts" 
 const scanDirectory = async ({ file }: { file: string }) => {
   const fileHandler = path.posix.join("./src", file);
@@ -15,13 +16,13 @@ const scanDirectory = async ({ file }: { file: string }) => {
         if (possibleModule.endsWith("_server.ts")) {
           const modulePath = path.posix.join(fileHandler, possibleModule);
 
-          let func;
-          if (process.env.NODE_ENV == "development") {
+          // let func;
+          // if (process.env.NODE_ENV == "development") {
             //* if we are in development mode, we add a query parameter to the import to force a reload of the module
-            func = await import(`../${modulePath}?update=${Date.now()}`);
-          } else {
-            func = await import(`../${modulePath}`);
-          }
+          const func = await import(`../${modulePath}?update=${Date.now()}`);
+          // } else {
+            // func = await import(`../${modulePath}`);
+          // }
 
           //* attempt to load the default export of the module and check if it is a function
           const [error, result] = await tryCatch(async () => func);
@@ -39,7 +40,7 @@ const scanDirectory = async ({ file }: { file: string }) => {
           const pageLocation = modulePath.replace(/\/sync\/[^/]+_server.ts/, "").substring(3);
           const syncName = possibleModule.replace("_server.ts", "");
 
-          syncFunctions[`sync-${pageLocation}-${syncName}`] = result.default;
+          syncs[`sync-${pageLocation}-${syncName}`] = result.default;
         }
       }
     } else {
@@ -55,11 +56,12 @@ const scanDirectory = async ({ file }: { file: string }) => {
 export const initializeSyncFiles = async () => {
   //* get the src folder, clear the current syncFunctions object and scan the src folder for any sync functions
   const srcFolder = fs.readdirSync(path.resolve("./src"));
-  Object.assign(syncFunctions, {});
+  Object.assign(syncs, {});
 
   for (const file of srcFolder) {
     await scanDirectory({ file });
   }
+  console.log(syncs);
 };
 
 type syncMessage = {
@@ -80,8 +82,9 @@ export default async function handleSyncRequest({ name, data, user }: syncMessag
 
   //* check if there exist a function with the given name and if it is a function, call it and return the result
   //* if the function returns an truethy value, the value is returned as the serverData key in the response
-  if (!syncFunctions[name]) { return { serverData: {}, clientData: data } }
-  const [error, result] = await tryCatch(async () => syncFunctions[name]({ data, user, functions }));
+  if (!syncs[name]) { return { serverData: {}, clientData: data } }
+  const functionsObject = process.env.NODE_ENV == 'development' ? devFunctions : functions;
+  const [error, result] = await tryCatch(async () => syncs[name]({ data, user, functions: functionsObject }));
 
   if (error) { return { message: error, error: true }; }
   if (result) { return { serverData: result, clientData: data }; }

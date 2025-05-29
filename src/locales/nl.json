@@ -1,0 +1,23 @@
+{
+  "middleware": {
+    "notAdmin": "Je bent geen beheerder."
+  },
+  "login": {
+    "empty": "Geen e-mailadres of wachtwoord opgegeven.",
+    "emailCharacterLimit": "E-mailadres mag niet langer zijn dan 191 tekens.",
+    "passwordCharacterMinimum": "Wachtwoord moet minstens 8 tekens lang zijn.",
+    "passwordCharacterLimit": "Wachtwoord mag niet langer zijn dan 191 tekens.",
+    "nameCharacterLimit": "Naam mag niet langer zijn dan 191 tekens.",
+    "invalidEmailFormat": "Ongeldig e-mailadresformaat.",
+    "passwordNotMatch": "Wachtwoorden komen niet overeen.",
+    "emailExists": "E-mailadres bestaat al.",
+    "userCreated": "Gebruiker aangemaakt.",
+    "createUserFailed": "Aanmaken van gebruiker mislukt.",
+    "userNotFound": "Gebruiker niet gevonden.",
+    "wrongPassword": "Wachtwoord komt niet overeen.",
+    "loggedIn": "Gebruiker ingelogd.",
+    "providerNotFound": "Provider niet gevonden.",
+    "noReason": "Geen reden opgegeven."
+  },
+  "test": "Test 123"
+}

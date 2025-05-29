@@ -1,11 +1,11 @@
-import { IncomingMessage, ServerResponse } from 'http';
 import fs from 'fs';
 import path from 'path';
 import { tryCatch } from './functions/tryCatch';
-import { userdata } from '../config';
-import { functions, initializeFunctions } from './getFunctions';
+import { minimalSessionLayout } from '../config';
+import { initializeFunctions, devFunctions } from './getFunctions';
+import { apis, functions } from './generatedApis'
 
-const apis = {};
+// const apis = {};
 //* here we scan the src folder for api folders and load any file that is in a api folder where the file extension is .ts 
 const scanDirectory = async ({ file }: { file: string }) => {
   const fileHandler = path.posix.join('./src', file);
@@ -16,13 +16,13 @@ const scanDirectory = async ({ file }: { file: string }) => {
         if (possibleModule.endsWith('.ts')) {
           const modulePath = path.posix.join(fileHandler, possibleModule);
 
-          let func; // return a module
-          if (process.env.NODE_ENV == 'development') { 
+          // let func; // return a module
+          // if (process.env.NODE_ENV == 'development') { 
             //* if we are in development mode, we add a query parameter to the import to force a reload of the module
-            func = await import(`../${modulePath}?update=${Date.now()}`)
-          } else { 
-            func = await import(`../${modulePath}`) 
-          }
+          const func = await import(`../${modulePath}?update=${Date.now()}`)
+          // } else { 
+            // func = await import(`../${modulePath}`) 
+          // }
 
           //* attempt to load the default export of the module and check if it is a function
           const [error, result] = await tryCatch(async () => func );
@@ -73,6 +73,8 @@ export const initializeApis = async () => {
   for (const file of srcFolder) {
     await scanDirectory({ file })
   }
+
+  console.log(apis);
 }
 
 type handleApiRequestType = {
@@ -97,11 +99,11 @@ export default async function handleApiRequest({ name, data, user }: handleApiRe
 
   const { auth, api } = apis[name];
 
-  //* if the login key is true we check if the user has session data and if it has all the keys in the userdata array in the config.ts file
+  //* if the login key is true we check if the user has session data and if it has all the keys in the minimalSessionLayout array in the config.ts file
   if (auth.login) { 
     if (!user) { return { message: 'not logged in', error: true }; }
-    for (const item of userdata) {
-      if (!user[item]) { return { message: 'not logged in', error: true }; }
+    for (const item of minimalSessionLayout) {
+      if (user[item] === undefined || user[item] === null) { return { message: 'not logged in', error: true }; }
     }
   }
 
@@ -121,7 +123,9 @@ export default async function handleApiRequest({ name, data, user }: handleApiRe
   }
   
   //* if the user has passed all the checks we call the api function and return the result
-  const [error, result] = await tryCatch(async () => await api({ data: data, functions, user }));
+
+  const functionsObject = process.env.NODE_ENV == 'development' ? devFunctions : functions;
+  const [error, result] = await tryCatch(async () => await api({ data, user, functions: functionsObject }));
   if (error) { console.log(error); return { message: error, error: true } }
   if (result) { return { result }; }
 

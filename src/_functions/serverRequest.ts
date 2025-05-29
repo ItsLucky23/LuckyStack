@@ -1,7 +1,7 @@
 import { toast } from "sonner";
 import { io, Socket } from 'socket.io-client';
 import tryCatch from 'src/_functions/tryCatch';
-import config, { dev, backendUrl } from "src/config";
+import config, { dev, backendUrl } from "../../config";
 
 let socket: Socket | null = null;
 const abortControllers = new Map<string, AbortController>();
@@ -70,6 +70,7 @@ export interface apiRequestReponse {
   status: 'success' | 'error' | any;
   result?: Record<string, any> | any;
   message?: string;
+  messageParams?: Record<string, any>;
 }
 
 export const apiRequest = ({ name, data }: apiRequestType) => {

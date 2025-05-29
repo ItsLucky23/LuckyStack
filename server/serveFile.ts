@@ -86,7 +86,11 @@ export const serveFile = async (req: IncomingMessage | { url: string }, res: Ser
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(content);
   } catch (err) {
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found");
+    if (url == 'index.html') {
+      res.end("-_- you have to run the 'npm run build' command first -_-")
+    } else {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Not Found");
+    }
   }
 };

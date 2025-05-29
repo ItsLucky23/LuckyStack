@@ -1,7 +1,7 @@
 import { apiRequest, syncRequest } from "src/_functions/serverRequest";
-import { toast } from "sonner";
 import { useEffect } from 'react';
 import { useTemplate } from 'src/_components/templateProvider';
+import notify from "src/_components/notify";
 
 export default function Home() {
   const { setTemplate } = useTemplate();
@@ -32,7 +32,7 @@ export default function Home() {
         shoes: <span>0</span>
       </div>
       <button className="bg-red-500"
-        onClick={() => { toast.success('this is a success message') }}>
+        onClick={() => { notify.success('test') }}>
         Click me!!
       </button>
     </div>

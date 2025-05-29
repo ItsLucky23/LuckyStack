@@ -11,22 +11,22 @@ import handleSyncRequest from "./handleSyncRequest";
 import allowedOrigin from './checkOrigin';
 
 //* here we load the server callbacks
-const serverCbs = {};
-export const initializeServerCallbacks = async () => {
-  const syncFolder = fs.readdirSync(path.resolve('./server/sync'));
-  Object.assign(serverCbs, {});
+// const serverCbs = {};
+// export const initializeServerCallbacks = async () => {
+//   const syncFolder = fs.readdirSync(path.resolve('./server/sync'));
+//   Object.assign(serverCbs, {});
 
-  for (const file of syncFolder) {
-    const fileHandler = path.posix.join('./server/sync', file);
-    if (fs.statSync(fileHandler).isFile() && file.endsWith('.ts')) {
-      const [error, result] = await tryCatch(async() => await import(`../${fileHandler}`))
-      if (error) { console.log(error); return; }
-      for(const func in result) {
-        serverCbs[func] = result[func];
-      }
-    }
-  }
-}
+//   for (const file of syncFolder) {
+//     const fileHandler = path.posix.join('./server/sync', file);
+//     if (fs.statSync(fileHandler).isFile() && file.endsWith('.ts')) {
+//       const [error, result] = await tryCatch(async() => await import(`../${fileHandler}`))
+//       if (error) { console.log(error); return; }
+//       for(const func in result) {
+//         serverCbs[func] = result[func];
+//       }
+//     }
+//   }
+// }
 
 type apiMessage = {
   name: string;

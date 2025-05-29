@@ -1,15 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import http from 'http';
-import { initializeApis } from "./handleApiRequest";
-import { initializeFunctions } from "./getFunctions";
+// import { initializeApis } from "./handleApiRequest";
+// import { initializeFunctions } from "./getFunctions";
 import getParams from './getParams';
 import { loginWithCredentials, loginCallback } from './login';
 import { serveFavicon, serveFile } from './serveFile';
-import { initializeSyncFiles } from './handleSyncRequest';
+// import { initializeSyncFiles } from './handleSyncRequest';
 import loadSocket from './socket';
 import z from 'zod';
-import oauthProviders from "../config";
+import oauthProviders from "./loginConfig";
 import { clearAllSessions, deleteSession, getAllSessions, getSession } from './functions/session';
 import allowedOrigin from './checkOrigin';
 import repl from 'repl';
@@ -99,7 +99,7 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
   if (z.string().startsWith('/auth/api').safeParse(routePath).success) {
     const providerName = routePath.split('/')[3]; // Extract the provider (google/github)
     const provider = oauthProviders.find(p => p.name === providerName);
-    if (!provider || !provider.name) { return { provider, status: false, reason: 'provider not found' }; }
+    if (!provider || !provider.name) { return { provider, status: false, reason: 'login.providerNotFound' }; }
 
     if (provider?.name != 'credentials' && 'scope' in provider) {
       res.writeHead(302, {
@@ -111,7 +111,7 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
     //* here all the logic happends for login or creating an account with credentials
     const { status, reason, newToken, userId } = (await loginWithCredentials(params)) ?? {
       status: false,
-      reason: 'no reason provided',
+      reason: 'login.noReason',
       newToken: null,
       userId: null,
     };
@@ -119,7 +119,7 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
     //* if it failed to either login or creating an account then we return
     if (!status) {
       res.setHeader("content-type", "application/json; charset=utf-8");
-      return res.end(JSON.stringify({ status, reason: 'internal server error' }));
+      return res.end(JSON.stringify({ status, reason: reason || 'internal server error' }));
     }
 
     //* if it was successful then we apply the cookie and return the user id and reason for the login or account creation
@@ -193,9 +193,9 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
 // const ip: string = '0.0.0.0';
 const ip: string = process.env.SERVER_IP || '127.0.0.1';
 const port: string = process.env.SERVER_PORT || '80';
-await initializeFunctions();
-await initializeApis();
-await initializeSyncFiles();
+// await initializeFunctions();
+// await initializeApis();
+// await initializeSyncFiles();
 const httpServer = http.createServer(async(req, res) => { ServerRequest(req, res) });
 loadSocket(httpServer);
 // @ts-ignore // typescript thinks ip needs to be a number

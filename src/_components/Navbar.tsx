@@ -1,8 +1,9 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { apiRequest } from "src/_functions/serverRequest"
 import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { sessionLayout } from "src/config";
+import { sessionLayout } from "../../config";
+import Icon from "./icon";
+import initializeRouter from "./router";
 
 const navbarItems = [
   {
@@ -175,11 +176,11 @@ const NavbarItem = ({ item, state, setState, pathname, session, router }: Navbar
       if (state == 'expended') { return }
       toggleId.current = null;
     }}
-    onClick={() => {
+    onClick={async () => {
       if (item.action) { item.action({ item, state, setState, pathname, session, router }) }
       else if (item.path) { 
         clearPopups();
-        void router(item.path);
+        void await router(item.path);
         setState('folded');
       }
     }}>
@@ -187,11 +188,12 @@ const NavbarItem = ({ item, state, setState, pathname, session, router }: Navbar
         item.init({ item, state, setState, pathname, session: session, router })
       :
       <>
-        <span 
-          style={{ fontSize: state === 'folded' ? '18px' : '22px', fontWeight: 'lighter' }}
-          className={`material-icons select-none ${state === 'folded' ? 'relative left-0.75' : ''}`}>
-          {item.icon}
-        </span>
+        <Icon 
+          name={item.icon || ''} 
+          size={state === 'folded' ? '18px' : '22px'}
+          weight={'lighter'}
+          customClasses={"relative left-0.75"}
+        />
         {state == 'expended' &&
           <div className="line-clamp-1 select-none">{item.label}</div>
         }
@@ -209,7 +211,8 @@ export default function Navbar() {
   const [session, setSession] = useState<sessionLayout>({}); // use proper type if you have one
   const [windowSize, setWindowSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
   const location = useLocation();
-  const router = useNavigate();
+  // const router = useNavigate();
+  const router = initializeRouter()
 
   const fetchSession = () => {
     apiRequest({ name: 'session' })
@@ -257,7 +260,7 @@ export default function Navbar() {
               <h1>{session.name}</h1>
             </div>
             <div className="">
-            <span 
+            {/* <span 
               style={{ fontSize: '22px', fontWeight: 'lighter' }}
               className={`material-icons select-none`}
               onClick={() => {
@@ -265,7 +268,16 @@ export default function Navbar() {
                 setState(value)
               }}>
               menu
-            </span>
+            </span> */}
+            <Icon
+              name={state == 'expended'? 'close_fullscreen' : 'open_in_full'}
+              size={'22px'}
+              weight={'lighter'}
+              onClick={() => {
+                const value = state == 'expended'? 'folded' : 'expended';
+                setState(value)
+              }}
+            />
             </div>
           </div>
         </>

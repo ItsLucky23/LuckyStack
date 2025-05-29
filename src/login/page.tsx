@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import AuthForm from "src/_components/authForm";
+import LoginForm from "src/_components/loginForm";
 import { useTemplate } from "src/_components/templateProvider";
 
 export default function App() {
@@ -11,7 +11,8 @@ export default function App() {
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <AuthForm formType={"login"} />
+      {/* <AuthForm formType={"login"} /> */}
+      <LoginForm formType="login" />
     </div>
   )
 }

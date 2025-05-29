@@ -1,8 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
-import multer from "multer";
 import { tryCatch } from "./functions/tryCatch";
-
-const upload = multer().array('files')
 
 type getParamsType = {
   method: string;
@@ -22,25 +19,6 @@ export default async function getParams({ method, req, res, queryString }: getPa
   return new Promise((resolve, reject) => {
     const contentType = req.headers['content-type'] || '';
 
-    // if (contentType.includes('multipart/form-data')) {
-    //   upload(req, res, (err) => {
-    //     if (err) {
-    //         console.error('Multer error:', err);
-    //         res.writeHead(400, { 'Content-Type': 'text/plain' });
-    //         return res.end('File upload error');
-    //     }
-
-    //     // const files = req.files?.map(file => ({
-    //     const files = (req as any).files?.map(file => ({
-    //         originalName: file.originalname,
-    //         mimeType: file.mimetype,
-    //         size: file.size,
-    //         path: file.path,
-    //     })) || [];
-
-    //     resolve({ files });
-    //   });
-    // } else {
     //* we store the passed data chunks in a string
       let body = '';
       req.on('data', (chunk) => {

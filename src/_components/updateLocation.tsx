@@ -4,11 +4,9 @@ import { useLocation } from 'react-router-dom';
 import { updateLocationRequest } from 'src/_functions/serverRequest';
 import { updateNavbar } from 'src/_components/Navbar';
 import TemplateProvider from 'src/_components/templateProvider'
-import { runNotifyOnNavigation } from 'src/_functions/notifyOnNavigate';
 
 export default function UpdateLocation() {
   const location = useLocation();
-  runNotifyOnNavigation();
   
   useEffect(() => {
     //* when the user changes the url, update the location in the users session data

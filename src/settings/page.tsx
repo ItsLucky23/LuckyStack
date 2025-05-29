@@ -1,14 +1,20 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTemplate } from 'src/_components/templateProvider';
 
 export default function Home() {
   const { setTemplate } = useTemplate();
+  const router = useNavigate();
 
   useEffect(() => {
     setTemplate('dashboard');
   }, []);
 
   return (
-    <div>Settings</div>
+    <div>
+      <button
+        onClick={() => router('/admin')}
+      >asd</button>
+    </div>
   )
 }

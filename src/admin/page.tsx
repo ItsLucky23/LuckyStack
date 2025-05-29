@@ -6,7 +6,7 @@ export default function Home() {
 
   useEffect(() => {
     setTemplate('dashboard');
-  }, []);
+  }, [setTemplate]);
 
   return (
     <div>Admin</div>
