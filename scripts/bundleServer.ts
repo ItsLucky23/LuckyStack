@@ -1,5 +1,4 @@
 import { build } from "esbuild";
-import path from "path";
 import { dependencies } from "../package.json";
 
 const externalDeps = [

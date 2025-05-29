@@ -5,7 +5,7 @@
 //* if you dont add your page in here it will allow the user to access the page
 import notify from "src/_components/notify";
 
-// @ts-ignore
+// @ts-ignore // we use ts-ignore because we dont use the searcParams in the example and this will cause a bundle error
 export default function middlewareHandler({ location, searchParams, session }: { location: string, searchParams: Record<string, any>, session: Record<string, any> }) {
   switch (location) {
     case '/test':
