@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { authSetup, sessionLayout } from 'config';
 
 interface Functions {
   prisma: PrismaClient;
@@ -15,14 +16,18 @@ interface Functions {
 interface ApiParams {
   data: Record<string, any>;
   functions: Functions;
-  user: Record<string, any>;
+  user: sessionLayout;
 };
 
 
-const auth = {
-  login: true, //* checks if the user session data has values. the values the sesssion object needs to have to pass the check are stored in the config.ts file in the minimalSessionLayout array 
-  additional: [ // you can add additional checks to your session, below we check if the user that called the api is an admin
-    // { key: 'admin', value: true }
+const auth: authSetup = {
+  login: true, //* checks if the session data has an id. 
+  additional: [
+    // { key: 'groupId', mustBeFalsy: false }, //* checks if the groupId is truethy, so if groupId is an empty string or 0 it will not pass
+    // { key: 'admin', value: true }, //* checks if admin = true
+    // { key: 'email', type: 'string' }, //* checks if the email is a string
+    // { key: 'updatedAt', nullish: false } //* checks if the updatedAt is not null or undefined 
+    //* you can perform certain checks with more than 1 condition but in the end they all have there own use case.
   ]
 }
 
@@ -31,7 +36,7 @@ const api = async ({ data, functions, user }: ApiParams) => {
   console.log(functions)
   console.log(user)
   console.log('you just called the randomApi.ts')
-  return { success: true, result: {} }
+  return { status: 'success', result: { name: 'John' } }
 }
 
 export { auth, api }

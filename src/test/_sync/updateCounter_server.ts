@@ -20,7 +20,6 @@ type SyncParams = {
 
 export default function removeCard({ data, user, functions }: SyncParams) {
   console.log(data)
-  console.log(functions)
   console.log(user)
   if (user?.location?.pathName == '/test') {
     return true;

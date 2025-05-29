@@ -6,10 +6,14 @@
   "scripts": {
     "client": "vite",
     "server": "npx tsx server/server.ts",
+    "liveServer": "npx tsx --watch server/server.ts",
     "lint": "eslint src/**/*.tsx",
+
     "buildClient": "tsc -b && vite build",
     "buildServer": "tsx scripts/generateApiIndex.ts && tsx scripts/bundleServer.ts",
     "build": "npm run buildClient && npm run buildServer",
+
+    "prod": "node dist/server.js",
     "production": "node dist/server.js"
   },
   "dependencies": {

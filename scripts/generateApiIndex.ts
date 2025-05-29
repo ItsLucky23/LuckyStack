@@ -34,7 +34,8 @@ const functionFiles = walkFunctionFiles('./server/functions');
 let importStatements = '';
 let apiMap = 'export const apis: Record<string, { auth: any, api: any }> = {\n';
 let syncMap = 'export const syncs: Record<string, any> = {\n';
-let functionsInit = 'export const functions: Record<string, any> = {};\nexport const initializeFunctions = async () => {\n';
+// let functionsInit = 'export const functions: Record<string, any> = {};\nexport const initializeFunctions = async () => {\n';
+let functionsMap = 'export const functions: Record<string, any> = {\n';
 
 let importCount = 0;
 
@@ -54,28 +55,35 @@ apiFiles.forEach((filePath) => {
   }
 
   if (normalized.includes('_sync') && normalized.endsWith('_server.ts')) {
-    const match = normalized.match(/src\/(.+?\/_sync\/.+?)\.ts$/i);
+    const match = normalized.match(/src\/(.+?)\/_sync\/(.+?)_server\.ts$/i);
     if (!match) return;
-    const [_, syncPath] = match;
-    const fileName = path.basename(syncPath, '.ts');
-    const syncKey = `sync-/${syncPath}-${fileName}`;
+    const [_, pagePath, syncName] = match;
+    const syncKey = `sync-/${pagePath.replace(/\//g, '-')}-${syncName}`;
     syncMap += `  "${syncKey}": ${varName}.default,\n`;
   }
 });
 
 // Handle server/functions imports
+// functionFiles.forEach((filePath, i) => {
+//   const importPath = '../' + filePath.replace(/\.ts$/, '');
+//   const varName = `fn${i}`;
+//   importStatements += `import * as ${varName} from '${importPath}';\n`;
+//   functionsInit += `  Object.assign(functions, ${varName});\n`;
+// });
 functionFiles.forEach((filePath, i) => {
   const importPath = '../' + filePath.replace(/\.ts$/, '');
   const varName = `fn${i}`;
   importStatements += `import * as ${varName} from '${importPath}';\n`;
-  functionsInit += `  Object.assign(functions, ${varName});\n`;
+  functionsMap += `  ...${varName},\n`;
 });
 
 apiMap += '};\n';
 syncMap += '};\n';
-functionsInit += '};\n';
+// functionsInit += '};\n';
+functionsMap += '};\n';
 
-const output = `${importStatements}\n${apiMap}\n${syncMap}\n${functionsInit}`;
+// const output = `${importStatements}\n${apiMap}\n${syncMap}\n${functionsInit}`;
+const output = `${importStatements}\n${apiMap}\n${syncMap}\n${functionsMap}`;
 
 fs.writeFileSync('./server/generatedApis.ts', output);
 console.log('✅ server/generatedApis.ts created');

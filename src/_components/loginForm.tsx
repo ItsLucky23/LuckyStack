@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import config, { providers } from "../../config";
+import config, { providers, sessionLayout } from "../../config";
 import tryCatch from "src/_functions/tryCatch";
 import notify from "./notify";
 
@@ -53,7 +53,7 @@ export default function LoginForm({ formType }: { formType: "login" | "register"
         body: JSON.stringify({ name, email, password, confirmPassword, provider }),
         credentials: "include",
       });
-      return (await res.json()) as { status: boolean; reason: string };
+      return (await res.json()) as { status: boolean; reason: string, newToken: string | null, session: sessionLayout | undefined };
     };
 
     const [error, response] = await tryCatch(fetchUser);
@@ -70,7 +70,7 @@ export default function LoginForm({ formType }: { formType: "login" | "register"
 
     notify.success(response.reason);
     setTimeout(() => {
-      window.location.href = response.reason === "user created" ? config.loginPageUrl : config.loginRedirectUrl;
+      window.location.href = response.newToken ? config.loginRedirectUrl : config.loginPageUrl;
     }, 1000);
   };
 

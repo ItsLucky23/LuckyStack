@@ -9,7 +9,7 @@ import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { saveSession } from "./functions/session"
 import validator from "validator"
-import config from '../config';
+import config, { sessionLayout } from '../config';
 
 dotenv.config();
 
@@ -73,7 +73,7 @@ const loginWithCredentials = async (params: paramsType) => {
     //* here we create the new user
     const [createNewUserError, createNewUserResponse] = await tryCatch(createNewUser);
     if (createNewUserError) { return { status: false, reason: createNewUserError }; }
-    if (createNewUserResponse) { return { status: true, reason: 'login.userCreated', userId: createNewUserResponse.id }; }
+    if (createNewUserResponse) { return { status: true, reason: 'login.userCreated', session: createNewUserResponse }; }
     return { status: false, reason: 'login.createUserFailed' };
 
   } else { //* login
@@ -115,7 +115,7 @@ const loginWithCredentials = async (params: paramsType) => {
       };
       await saveSession(newToken, newUser);
       console.log(newUser);
-      return { status: true, reason: 'login.loggedIn', newToken };
+      return { status: true, reason: 'login.loggedIn', newToken, session: newUser };
     }
   }
 }
@@ -213,23 +213,23 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
 
   const name: string = getUserDataResponse[provider.nameKey] || 'didnt find a name'
 
-  const email: string | undefined = getUserDataResponse[provider.emailKey];
+  let email: string | undefined = getUserDataResponse[provider.emailKey];
   const avatar: string = 
     provider?.avatarKey ? getUserDataResponse[provider.avatarKey] : 
     provider.getAvatar ? provider.getAvatar({userData: getUserDataResponse, avatarId: getUserDataResponse[provider.avatarCodeKey]}) : '';
 
-  const user = {
-    id: '',
-    name,
-    provider: provider.name,
-    email,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    token: '',
-    avatar,
-    admin: false,
-    language: config.defaultLanguage
-  }
+  // const user = {
+  //   id: '',
+  //   name,
+  //   provider: provider.name,
+  //   email,
+  //   createdAt: new Date(),
+  //   updatedAt: new Date(),
+  //   token: '',
+  //   avatar,
+  //   admin: false,
+  //   language: config.defaultLanguage
+  // }
 
   //* if we didnt find the email we try to get it with a external link if this one is provided
   if (!email && provider.getEmail) {
@@ -240,16 +240,16 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
       return false; 
     }
 
-    user.email = selectedEmail;
+    email = selectedEmail;
   }
 
-  let tempUser: {id: string, createdAt: Date, updatedAt: Date, admin: boolean, language: string, avatar?: string} | undefined;
-  if (user && user.email) {
+  let tempUser: sessionLayout | undefined;
+  if (email) {
     const fetchUser = async () => {
       return await prisma.user.findFirst({
         where: {
-          email: user.email,
-          provider: user.provider as PROVIDERS
+          email: email,
+          provider: provider.name as PROVIDERS
         }
       })
     } 
@@ -262,18 +262,21 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
     }
 
     //* if the user exists we assign it to the tempUser variable
-    if (userDataResponse?.id) { tempUser = userDataResponse; }
+    if (userDataResponse?.id) { 
+      const { password, ...safeData } = userDataResponse;
+      tempUser = safeData; 
+    }
 
     //* if the user doesnt exist we create a new one
     if (!tempUser) {
       const createNewUser = async () => {
-        if (!user.email) { return false; }
+        if (!email) { return false; }
         return await prisma.user.create({
           data: {
-            email: user.email,
-            provider: user.provider as PROVIDERS,
-            name: user.name,
-            avatar: user.avatar,
+            email,
+            provider: provider.name as PROVIDERS,
+            name,
+            avatar,
             language: config.defaultLanguage
           }
         })
@@ -284,24 +287,27 @@ const loginCallback = async (pathname: string, req: IncomingMessage, res: Server
         return false;
       }
 
-      if (createNewUserResponse) { tempUser = createNewUserResponse; }
+      if (createNewUserResponse) { 
+        const { password,...safeData } = createNewUserResponse;
+        tempUser = safeData; 
+      }
     }
   }
 
-  // user.id = userId;
   if (!tempUser) {
     return false;
   }
 
   //* here we create a new token, create the users session and return the token as a sign of success
   const newToken = randomBytes(32).toString("hex")
-  user.id = tempUser.id;
-  user.createdAt = tempUser.createdAt;
-  user.updatedAt = tempUser.updatedAt;
-  user.token = newToken;
-  user.admin = tempUser.admin
-  user.language = config.defaultLanguage;
-  if (tempUser.avatar) { user.avatar = tempUser.avatar; }
+  // user.id = tempUser.id;
+  // user.createdAt = tempUser.createdAt;
+  // user.updatedAt = tempUser.updatedAt;
+  // user.token = newToken;
+  // user.admin = tempUser.admin
+  // user.language = config.defaultLanguage;
+  // if (tempUser.avatar) { user.avatar = tempUser.avatar; }
+  const user = tempUser
 
   await saveSession(newToken, user);
   console.log(user)

@@ -16,7 +16,7 @@ export default function initializeRouter() {
     });
 
     const session = await apiRequest({ name: 'session' }) as sessionLayout;
-    const result = middlewareHandler({ location: path, searchParams: queryObject, session }) as { success: boolean, redirect: string } | undefined;
+    const result = await middlewareHandler({ location: path, searchParams: queryObject, session }) as { success: boolean, redirect: string } | undefined;
 
     if (result?.success) {
       return navigateHandler(path);

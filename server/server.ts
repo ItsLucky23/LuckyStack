@@ -13,6 +13,7 @@ import oauthProviders from "./loginConfig";
 import { clearAllSessions, deleteSession, getAllSessions, getSession } from './functions/session';
 import allowedOrigin from './checkOrigin';
 import repl from 'repl';
+import { sessionLayout } from '../config';
 
 const originalLog = console.log;
 console.log = (...args: any[]) => {
@@ -109,12 +110,12 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
     }
 
     //* here all the logic happends for login or creating an account with credentials
-    const { status, reason, newToken, userId } = (await loginWithCredentials(params)) ?? {
-      status: false,
-      reason: 'login.noReason',
-      newToken: null,
-      userId: null,
-    };
+    const { status, reason, newToken, session } = await loginWithCredentials(params) as {
+      status: boolean,
+      reason: string,
+      newToken: string | null,
+      session: sessionLayout | undefined
+    }
 
     //* if it failed to either login or creating an account then we return
     if (!status) {
@@ -127,14 +128,16 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
       if (token) { await deleteSession(token); }
 
       console.log('setting cookie with newToken: ', newToken);
-      const cookieOptions = process.env.NODE_ENV == "development" ? 
-        "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800;": 
-        "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; Secure;";
+      // const cookieOptions = process.env.NODE_ENV == "development" ? 
+      //   "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800;": 
+      //   "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; Secure;";
+      const cookieOptions = `HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; ${process.env.SECURE == 'true' ? "Secure;" : ""}`
+
       res.setHeader("Set-Cookie", `token=${newToken}; ${cookieOptions}`);
-      return res.end(JSON.stringify({ status, reason, userId })) 
-    } else { 
-      return res.end(JSON.stringify({ status, reason })) 
+      // return res.end(JSON.stringify({ status, reason, session })) 
+    // } else { 
     }
+    return res.end(JSON.stringify({ status, reason, session, newToken })) 
 
   } else if (z.string().startsWith('/auth/callback').safeParse(routePath).success) {
     //* this endpoint is triggerd by the oauth provider after the user has logged in
@@ -153,9 +156,10 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
 
     //* we set the cookie with the new token and redirect the user to the frontend
     console.log('setting cookie with newToken: ', newToken);
-    const cookieOptions = process.env.NODE_ENV == "development" ? 
-      "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800;": 
-      "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; Secure;";
+    // const cookieOptions = process.env.NODE_ENV == "development" ? 
+    //   "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800;": 
+    //   "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; Secure;";
+    const cookieOptions = `HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; ${process.env.SECURE == 'true' ? "Secure;" : ""}`
       
     const location = process.env.NODE_ENV == "development"?
       process.env.FRONTEND_URL || '/':

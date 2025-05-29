@@ -37,10 +37,12 @@ const scanDirectory = async ({ file }: { file: string }) => {
           //* here we remove the sync folder from the path and keep the path to the page location
           //* this works together with the syncRequest function on the client from serverRequest.ts so that we have sync functions bind to a page its route
           //* for example src/test/test2/sync/updateCard.ts becomes /test/test2 indicating the location for wich page this api call is meant to be
-          const pageLocation = modulePath.replace(/\/sync\/[^/]+_server.ts/, "").substring(3);
+          // const pageLocation = modulePath.replace(/\/sync\/[^/]+_server.ts/, "").substring(3);
+          // const pageLocation = modulePath.match(/^(.*?)(?=\/_sync)/)?.[1] || '';
+          const pageLocation = modulePath.replace(/^src\//, '').split('/_sync')[0];
           const syncName = possibleModule.replace("_server.ts", "");
 
-          syncs[`sync-${pageLocation}-${syncName}`] = result.default;
+          syncs[`sync-/${pageLocation}-${syncName}`] = result.default;
         }
       }
     } else {
@@ -56,12 +58,13 @@ const scanDirectory = async ({ file }: { file: string }) => {
 export const initializeSyncFiles = async () => {
   //* get the src folder, clear the current syncFunctions object and scan the src folder for any sync functions
   const srcFolder = fs.readdirSync(path.resolve("./src"));
-  Object.assign(syncs, {});
 
+  for (const key in syncs) {
+    delete syncs[key];
+  }
   for (const file of srcFolder) {
     await scanDirectory({ file });
   }
-  console.log(syncs);
 };
 
 type syncMessage = {
@@ -84,7 +87,7 @@ export default async function handleSyncRequest({ name, data, user }: syncMessag
   //* if the function returns an truethy value, the value is returned as the serverData key in the response
   if (!syncs[name]) { return { serverData: {}, clientData: data } }
   const functionsObject = process.env.NODE_ENV == 'development' ? devFunctions : functions;
-  const [error, result] = await tryCatch(async () => syncs[name]({ data, user, functions: functionsObject }));
+  const [error, result] = await tryCatch(async () => await syncs[name]({ data, user, functions: functionsObject }));
 
   if (error) { return { message: error, error: true }; }
   if (result) { return { serverData: result, clientData: data }; }

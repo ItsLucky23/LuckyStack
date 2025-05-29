@@ -12,12 +12,11 @@ export const apis: Record<string, { auth: any, api: any }> = {
 };
 
 export const syncs: Record<string, any> = {
-  "sync-/test/_sync/updateCounter_server-updateCounter_server": api0.default,
+  "sync-/test-updateCounter": api0.default,
 };
 
-export const functions: Record<string, any> = {};
-export const initializeFunctions = async () => {
-  Object.assign(functions, fn0);
-  Object.assign(functions, fn1);
-  Object.assign(functions, fn2);
+export const functions: Record<string, any> = {
+  ...fn0,
+  ...fn1,
+  ...fn2,
 };

@@ -4,7 +4,7 @@ type updateCounterProps = {
 }
 
 export default function updateCounter({ serverData, clientData }: updateCounterProps) {
-  console.log(serverData); // output: {}
+  console.log(serverData); // output: true
   console.log(clientData); // output: { product: 'shoes', amount: 5 }
 
   const counter = document.querySelector(`.${clientData.product}Counter span`) as HTMLSpanElement;

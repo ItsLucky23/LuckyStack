@@ -24,7 +24,7 @@ export default function Middleware({ children }: { children: ReactNode }) {
       });
 
       const session = await apiRequest({ name: 'session' }) as sessionLayout;
-      const result = middlewareHandler({ location: location.pathname, searchParams: queryObject, session }) as { success: boolean, redirect: string } | undefined;
+      const result = await middlewareHandler({ location: location.pathname, searchParams: queryObject, session }) as { success: boolean, redirect: string } | undefined;
 
       if (!isMounted) return;
       if (result?.success) {

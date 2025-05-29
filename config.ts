@@ -6,30 +6,37 @@ const config = {
   defaultLanguage: 'en', //* default language if the session data doesnt include it, this is used with the notify system with the json files in the localed folder
 }
 //* these values are optional to have in the session object, used for type declartion after an apiRequest on the client
-export type sessionLayout = Partial<{
+export interface sessionLayout {
   id: string;
   name: string;
   provider: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
-  token: string;
+  createdAt: Date;
+  updatedAt: Date;
+  token?: string;
   avatar: string;
   language: string;
-  location: {
+  admin: boolean;
+  groupId?: string;
+  location?: {
     pathname: string;
     searchParams: {
       [key: string]: string;
     };
   };
-}>;
+};
 
-//* these values should always be in the session object
-//* they can be false but just not undefined or null
-//* if you want the user to have a default session value you need to add it here and edit the login.ts file in the server folder.
-//* most cases you want to add an optional value and you want to do this in the sessionLayout type
-//* but if you want to add a required value it needs to be done here in the minimalSessionLayout array and in the login logic in the login.ts file in the server folder
-export const minimalSessionLayout = ['id', 'name', 'provider', 'email', 'createdAt', 'updatedAt', 'token', 'avatar', 'language'];
+export interface authSetup {
+  login: boolean; //* if true then the user needs to have an id in the session object
+  additional?: { //* if true then the user needs to have the additional keys in the session object with the condition
+    key: keyof sessionLayout; //* the key of the session object
+    value?: any //* the exact value the key needs to have. this is a strict comparison
+    type?: 'string' | 'number' | 'boolean'; //* the type of the key. this is a strict comparison
+    nullish?: boolean; //* if true then the key needs to be null or undefined, if false then the key needs to be not null and not undefined
+    mustBeFalsy?: boolean; //* if true than the passes key needs to be a false value such as false, 0, -0, 0n, "", null, undefined or NaN, if false then the key needs to be a true value such as true, 1, 'a' or any other value
+  }[]
+}
+
 export const providers = ['credentials', 'google', 'github', 'facebook', 'discord'];
 
 export default config;

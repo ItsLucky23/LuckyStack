@@ -10,14 +10,14 @@ datasource db {
 model user {
   id        String    @id @default(uuid())
   email     String
-  name      String?
+  name      String
   password  String?
+  admin     Boolean @default(false)
+  avatar    String @default("")
+  language  String @default("en")
   provider  PROVIDERS
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  avatar    String @default("")
-  language  String @default("en")
-  admin     Boolean @default(false)
 }
 
 enum PROVIDERS {

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { tryCatch } from './functions/tryCatch';
-import { minimalSessionLayout } from '../config';
 import { initializeFunctions, devFunctions } from './getFunctions';
 import { apis, functions } from './generatedApis'
 
@@ -68,8 +67,9 @@ const scanDirectory = async ({ file }: { file: string }) => {
 export const initializeApis = async () => {
   //* get the src folder, clear the current apiFunctions object and scan the src folder for any api functions
   const srcFolder = fs.readdirSync(path.resolve('./src'));
-  Object.assign(apis, {});
-
+  for (const key in apis) {
+    delete apis[key];
+  }
   for (const file of srcFolder) {
     await scanDirectory({ file })
   }
@@ -99,12 +99,13 @@ export default async function handleApiRequest({ name, data, user }: handleApiRe
 
   const { auth, api } = apis[name];
 
-  //* if the login key is true we check if the user has session data and if it has all the keys in the minimalSessionLayout array in the config.ts file
+  //* if the login key is true we check if the user has an id in the session object
   if (auth.login) { 
-    if (!user) { return { message: 'not logged in', error: true }; }
-    for (const item of minimalSessionLayout) {
-      if (user[item] === undefined || user[item] === null) { return { message: 'not logged in', error: true }; }
-    }
+    if (!user?.id) { return { message: 'not logged in', error: true }; }
+    // if (!user) { return { message: 'not logged in', error: true }; }
+    // for (const item of minimalSessionLayout) {
+    //   if (user[item] === undefined || user[item] === null) { return { message: 'not logged in', error: true }; }
+    // }
   }
 
   //* if the additional key is an array we check if the following
@@ -113,15 +114,90 @@ export default async function handleApiRequest({ name, data, user }: handleApiRe
   //* examples:
   //* { key: 'admin', type: 'boolean' } -> checks if the user has the key admin and if the value is of type boolean
   //* { key: 'admin', value: true } -> checks if the user has the key admin and if the value is true   
-  if (auth.additional) {
-    for (const additional of auth.additional) {
-      if (!additional?.key || (!additional?.type && !additional?.value)) { continue; }
-      if (!user?.[additional.key]) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
-      if (additional.type && typeof user[additional.key] != additional.type) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
-      if (additional.value && user[additional.key] != additional.value) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
-    }
+  // if (auth.additional) {
+  //   for (const additional of auth.additional) {
+  //     if (!additional?.key || (!additional?.type && !additional?.value)) { continue; }
+  //     if (!user?.[additional.key]) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
+  //     if (additional.type && typeof user[additional.key] != additional.type) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
+  //     if (additional.value && user[additional.key] != additional.value) { return { message: `found user doesnt have the right ${additional.key} value`, error: true } }
+  //   }
+  // }
+  
+  function isFalsy(value: any): boolean {
+    return (
+      value === false ||
+      value === 0 ||
+      value === -0 ||
+      value === 0n ||
+      value === '' ||
+      value === null ||
+      value === undefined ||
+      (typeof value === 'number' && isNaN(value))
+    );
   }
   
+  if (auth.additional) {
+    for (const condition of auth.additional) {
+      const val = user?.[condition.key];
+
+      //* If nullish flag is set, check accordingly
+      if (typeof condition.nullish === 'boolean') {
+        const isNullish = val === null || val === undefined;
+        if (condition.nullish && !isNullish) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to be null or undefined`,
+          };
+        }
+        if (!condition.nullish && isNullish) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to be not null and not undefined`,
+          };
+        }
+      }
+
+      //* Check type if specified (skip null or undefined values)
+      if (condition.type && val != null) {
+        if (typeof val !== condition.type) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to be of type ${condition.type}`,
+          };
+        }
+      }
+
+      //* Check exact value if specified (strict equality)
+      if ('value' in condition) {
+        if (val !== condition.value) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to equal ${JSON.stringify(condition.value)}`,
+          };
+        }
+      }
+
+      //* Check truthy/falsy if specified
+      if (typeof condition.mustBeFalsy === 'boolean') {
+        if (condition.mustBeFalsy && !isFalsy(val)) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to be falsy`,
+          };
+        }
+        if (!condition.mustBeFalsy && isFalsy(val)) {
+          return {
+            error: true,
+            message: `Expected ${condition.key} to be truthy`,
+          };
+        }
+      }
+    }
+  
+    //* All checks passed
+    // return { error: false };
+  }
+
   //* if the user has passed all the checks we call the api function and return the result
 
   const functionsObject = process.env.NODE_ENV == 'development' ? devFunctions : functions;
