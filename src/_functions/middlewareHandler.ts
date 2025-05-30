@@ -13,7 +13,6 @@ export default function middlewareHandler({ location, searchParams, session }: {
       if (session?.email && session?.provider) { 
         return { success: true }; 
       }
-      // notify.error('middleware.notLoggedIn');
       return { redirect: '/login' };
 
     case '/admin':
@@ -21,7 +20,6 @@ export default function middlewareHandler({ location, searchParams, session }: {
       if (session?.email && session?.provider && session?.admin === true) {
         return { success: true }; 
       } else if (!session?.email || !session?.provider) {
-        // notify.error('middleware.notLoggedIn');
         return { redirect: '/login' };
       } else if (!session?.admin) { 
         notify.error('middleware.notAdmin');

@@ -6,6 +6,7 @@ const Templates = {
   dashboard: DashboardTemplate,
   plain: PlainTemplate,
 }
+type Template = 'dashboard' | 'plain';
 
 function DashboardTemplate({ children }: { children: React.ReactNode }) {
   return (
@@ -30,7 +31,6 @@ function PlainTemplate({ children }: { children: React.ReactNode }) {
   )
 }
 
-type Template = 'dashboard' | 'plain';
 const TemplateContext = createContext<{ setTemplate: (template: Template) => void; }>({ setTemplate: () => { return; } });
 
 export function useTemplate() {

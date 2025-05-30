@@ -32,7 +32,7 @@ export default function Home() {
         shoes: <span>0</span>
       </div>
       <button className="bg-red-500"
-        onClick={() => { notify.success('test') }}>
+        onClick={() => { notify.success('test', { name: 'mike' }) }}>
         Click me!!
       </button>
     </div>

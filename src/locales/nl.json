@@ -19,5 +19,5 @@
     "providerNotFound": "Provider niet gevonden.",
     "noReason": "Geen reden opgegeven."
   },
-  "test": "Test 123"
+  "test": "Hoi {{name}}"
 }

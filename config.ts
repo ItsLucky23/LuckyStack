@@ -9,15 +9,14 @@ const config = {
 export interface sessionLayout {
   id: string;
   name: string;
-  provider: string;
   email: string;
+  provider: string;
+  admin: boolean;
+  avatar: string;
+  language: string;
   createdAt: Date;
   updatedAt: Date;
   token?: string;
-  avatar: string;
-  language: string;
-  admin: boolean;
-  groupId?: string;
   location?: {
     pathname: string;
     searchParams: {

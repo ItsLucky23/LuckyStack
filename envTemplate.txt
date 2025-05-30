@@ -5,14 +5,14 @@ FRONTEND_URL=http://localhost:5173 # used for development, production we serve t
 SERVER_IP=localhost # used for development and testing oauth providers cause they only work on valid domains and localhost is a valid domain
 SERVER_PORT=80 # 80 for localhost and for production any port you like
 
-DNS=verpleegkunde.keetlerop.nl # the dns record used for the server when in production
+DNS=localhost # the dns record used for the server when in production
 
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
 #here you can add urls that are allowed to communicate with the server, such as oauth urls
 #when adding new urls make sure to saperate them with a ',' and at the end of the url you sometimes need to add the '/' to make it work 
-EXTERNAL_ORIGINS=https://accounts.google.com/,https://github.com/,https://www.facebook.com/,https://discord.com/,https://subdomain.keetlerop.nl,subdomain.keetlerop.nl,http://localhost:5173
+EXTERNAL_ORIGINS=https://accounts.google.com/,https://github.com/,https://www.facebook.com/,https://discord.com/,https://yourDomain.nl,subdomain.yourDomain.nl
 
 #https://console.cloud.google.com/apis/credentials
 # create a new project, go to credentials, create OAuth clientId
