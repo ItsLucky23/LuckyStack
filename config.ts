@@ -1,4 +1,6 @@
 const config = {
+  // * backendUrl should be 'http://localhost:80' when running 'npm run client' but when running 'npm run prod' it should be the DNS
+  // backendUrl: 'https://random.dns.com', //* the url of the backend server
   backendUrl: 'http://localhost:80', //* the url of the backend server
   dev: true, //* if true then we get extra console logs
   loginPageUrl: '/login', //* url the client is redirected to when the user is not authenticate

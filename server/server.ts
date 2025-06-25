@@ -161,9 +161,7 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
     //   "HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; Secure;";
     const cookieOptions = `HttpOnly; SameSite=Strict; Path=/; Max-Age=604800; ${process.env.SECURE == 'true' ? "Secure;" : ""}`
       
-    const location = process.env.NODE_ENV == "development"?
-      process.env.FRONTEND_URL || '/':
-      `http${process.env.SECURE == 'true' ? 's' : ''}://${process.env.DNS}`
+    const location = process.env.DNS
 
     res.setHeader("Set-Cookie", `token=${newToken}; ${cookieOptions}`);
     res.writeHead(302, { Location: location }); // Redirect without exposing token in URL
