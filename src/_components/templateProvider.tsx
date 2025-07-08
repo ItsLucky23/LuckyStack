@@ -39,10 +39,11 @@ export function useTemplate() {
 
 export default function TemplateProvider({ children }: { children: React.ReactNode }) {
   const [template, setTemplate] = useState<Template>('plain');
+  const TemplateComponent = Templates[template] || PlainTemplate;
 
   return (
     <TemplateContext.Provider value={{ setTemplate }}>
-      {Templates[template]({ children }) || Templates.plain({ children })}
+      <TemplateComponent>{children}</TemplateComponent>
     </TemplateContext.Provider>
-  )
+  );
 }
