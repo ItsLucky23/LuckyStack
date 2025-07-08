@@ -25,8 +25,8 @@ EXTERNAL_ORIGINS=https://accounts.google.com,https://github.com,https://www.face
 # scroll down to Authorized redirect URIs and add the server ip port and than /auth/callback/google
 # so for dev it should be http://localhost:80/auth/callback/google
 # copy the google client id and secret.
-# GOOGLE_CLIENT_ID=xxxxx
-# GOOGLE_CLIENT_SECRET=xxxxx
+GOOGLE_CLIENT_ID=xxxxx
+GOOGLE_CLIENT_SECRET=xxxxx
 
 #https://github.com/settings/developers
 # create a new OAuth app, homepage url can be http://localhost:80/auth/callback/github
@@ -65,10 +65,6 @@ DISCORD_CLIENT_SECRET=xxxxxxx
 # currently switching from twitter to X and no clear documentation in my opinion 
 # X_CLIENT_ID=a
 # X_CLIENT_SECRET=a
-
-#node -e "console.log(require('crypto').randomBytes(96).toString('base64'))"
-# paste the result in the JWT_SECRET
-JWT_SECRET=xxxxxxx
 
 # DATABASE_URL="provider://user:password@host:port/database"
 # example: DATABASE_URL="mysql://root:@localhost:3306/test"

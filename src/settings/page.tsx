@@ -11,10 +11,8 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <button
-        onClick={() => router('/admin')}
-      >asd</button>
+    <div className='flex items-center justify-center text-4xl font-semibold w-full h-full'>
+      settings
     </div>
   )
 }

@@ -5,8 +5,9 @@ import { Toaster } from 'sonner'
 import 'src/index.css'
 import { loadClientSyncFunctions } from 'src/_functions/serverRequest'
 import VConsole from 'vconsole';
-import { dev } from '../config'
+import { mobileConsole } from '../config'
 import UpdateLocation from 'src/_components/updateLocation'
+import { MenuHandlerProvider } from './_components/menuHandler'
 
 const getRoutes = (pages: Record<string, { default: React.ComponentType }>) => {
   const routes = [];
@@ -41,7 +42,7 @@ const router = createBrowserRouter([{
 }])
 await loadClientSyncFunctions();
 
-if (dev) { new VConsole(); }
+if (mobileConsole) { new VConsole(); }
 
 const root = document.getElementById("root");
 if (root) {
@@ -49,7 +50,9 @@ if (root) {
     <StrictMode>
       <Toaster richColors />
       <div className='w-full h-dvh m-0 p-0'>
-        <RouterProvider router={router}/>
+        <MenuHandlerProvider>
+          <RouterProvider router={router}/>
+        </MenuHandlerProvider>
       </div>
     </StrictMode>
   );

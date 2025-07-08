@@ -9,9 +9,9 @@ const navbarItems = [
   {
     init: function InitComponent({ state, session }: NavbarItemProps) {
       const [imgError, setImgError] = useState(false);
-      const firstLetter = session.name?.[0]?.toUpperCase() ?? '?';
+      const firstLetter = session?.name?.[0]?.toUpperCase() ?? '?';
     
-      const showFallback = !session.avatar || imgError;
+      const showFallback = !session?.avatar || imgError;
     
       return (
         <>
@@ -22,14 +22,14 @@ const navbarItems = [
           ) : (
             <img
               className="rounded-full max-w-6 max-h-6 select-none"
-              src={session.avatar}
+              src={session?.avatar}
               alt="avatar"
               onError={() => { setImgError(true) }}
             />
           )}
           
           {state === 'expended' && (
-            <div className="line-clamp-1 select-none">{session.name}</div>
+            <div className="line-clamp-1 select-none">{session?.name}</div>
           )}
         </>
       );
@@ -142,7 +142,7 @@ interface NavbarItemProps {
   state: 'folded' | 'expended',
   setState: (state: 'folded' | 'expended') => void,
   pathname: string,
-  session: sessionLayout,
+  session: sessionLayout | null,
   router: (location: string) => Promise<void> | void
 }
 
@@ -208,7 +208,7 @@ let globalCallback: (() => void) | null = null;
 export default function Navbar() {
 
   const [state, setState] = useState<'folded' | 'expended'>('folded');
-  const [session, setSession] = useState<sessionLayout>({}); // use proper type if you have one
+  const [session, setSession] = useState<sessionLayout | null>(null); // use proper type if you have one
   const [windowSize, setWindowSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
   const location = useLocation();
   // const router = useNavigate();
@@ -254,10 +254,10 @@ export default function Navbar() {
     <>
       {windowSize.width < 768 &&
         <>
-          <div className="w-full py-2 px-4 bg-gray-100 text-black flex justify-between items-center">
+          <div className="w-full py-2 px-4 bg-white text-black flex justify-between items-center">
             <div className="flex gap-2 items-center">
-              <img src={session.avatar} className="max-w-8 max-h-8 rounded-full"></img>
-              <h1>{session.name}</h1>
+              <img src={session?.avatar} className="max-w-8 max-h-8 rounded-full"></img>
+              <h1>{session?.name}</h1>
             </div>
             <div className="">
             {/* <span 
@@ -282,7 +282,7 @@ export default function Navbar() {
           </div>
         </>
       }
-      <div className={`h-full bg-gray-100 text-gray-500 flex flex-col items-center md:py-4 transition-all duration-200 md:px-2 absolute z-20 md:z-0 md:relative
+      <div className={`h-full bg-white text-gray-500 flex flex-col items-center md:py-4 transition-all duration-200 md:px-2 absolute z-20 md:z-0 md:relative
         ${state == 'folded' ? 
           'md:w-14 w-0 gap-3' : 
           'w-64 gap-1 px-2'

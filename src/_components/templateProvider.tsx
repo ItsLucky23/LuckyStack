@@ -13,7 +13,7 @@ function DashboardTemplate({ children }: { children: React.ReactNode }) {
     <div className="w-full h-full flex flex-row bg-white">
       <div className="w-full h-full flex flex-col md:flex-row">
         <Navbar/>
-        <div className="md:flex-grow h-full text-black">
+        <div className="md:flex-grow h-full text-black bg-blue-50">
           <Middleware>
             {children}
           </Middleware>

@@ -6,9 +6,11 @@ export default function Home() {
 
   useEffect(() => {
     setTemplate('dashboard');
-  }, [setTemplate]);
+  }, []);
 
   return (
-    <div>Admin</div>
+    <div className='flex items-center justify-center text-4xl font-semibold w-full h-full'>
+      Admin
+    </div>
   )
 }

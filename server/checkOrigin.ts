@@ -18,7 +18,7 @@ const allowedOrigin = (origin: string) => {
   const externalOrigins = process.env.EXTERNAL_ORIGINS?.split(',') || [];
   for (const externalOrigin of externalOrigins) {
     if (origin == externalOrigin) { return true; }
-    if (origin+'/' == externalOrigin) { return true; }
+    if (origin == externalOrigin+'/') { return true; }
     // if (formattedOrigin == externalOrigin) { return true; }
     // if (urlWithPort443 == externalOrigin && process.env.SECURE == 'true') { return true; }
     // if (urlWithPort80 == externalOrigin && process.env.SECURE != 'true') { return true; }
@@ -46,8 +46,6 @@ const allowedOrigin = (origin: string) => {
   console.log('formattedOrigin:', formattedOrigin)
   console.log('dns:', process.env.DNS)
   console.log('dns:', process.env.DNS+'/')
-  console.log('dns:', `http${process.env.SECURE?'s' : ''}://${process.env.DNS}`)
-  console.log('dns:', `http${process.env.SECURE?'s' : ''}://${process.env.DNS}/`)
   for (const externalOrigin of externalOrigins) {
     console.log('externalOrigin:', externalOrigin)
     console.log('externalOrigin:', externalOrigin+'/')

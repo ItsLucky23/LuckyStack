@@ -7,7 +7,7 @@ export default function updateCounter({ serverData, clientData }: updateCounterP
   console.log(serverData); // output: true
   console.log(clientData); // output: { product: 'shoes', amount: 5 }
 
-  const counter = document.querySelector(`.${clientData.product}Counter span`) as HTMLSpanElement;
+  const counter = document.querySelector(`.${clientData.product}Counter strong`) as HTMLSpanElement;
   if (!counter) { return }
   const newValue = (parseInt(counter.innerText) + (clientData.increase ? 1 : -1)).toString();
   counter.innerText = newValue;

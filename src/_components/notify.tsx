@@ -2,8 +2,8 @@ import { toast } from "sonner";
 import { apiRequest } from "src/_functions/serverRequest";
 // import config, { sessionLayout } from "src/loginConfig";
 import config, { sessionLayout } from "../../config"
-import nlJson from "src/locales/nl.json";
-import enJson from "src/locales/en.json";
+import nlJson from "src/_locales/nl.json";
+import enJson from "src/_locales/en.json";
 
 interface LanguageStrings {
   [key: string]: string | Record<string, any>;
