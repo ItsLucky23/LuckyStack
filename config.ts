@@ -6,7 +6,8 @@ const config = {
   loginPageUrl: '/login', //* url the client is redirected to when the user is not authenticate
   loginRedirectUrl: '/test', //* url the client is redirected to after logging in
   defaultLanguage: 'en', //* default language if the session data doesnt include it, this is used with the notify system with the json files in the localed folder
-  mobileConsole: false //* if true then there is a extra console you can open on any device (including mobile)
+  mobileConsole: false, //* if true then there is a extra console you can open on any device (including mobile)
+  multiDevicePreview: true //* if true then the page is rendered onto a phone and a desktop enviroment, this is for when developing frontend for mobile and desktop
 }
 //* these values are optional to have in the session object, used for type declartion after an apiRequest on the client
 export interface sessionLayout {
@@ -42,4 +43,4 @@ export interface authSetup {
 export const providers = ['credentials', 'google', 'github', 'facebook', 'discord'];
 
 export default config;
-export const { backendUrl, dev, loginPageUrl, loginRedirectUrl, defaultLanguage, mobileConsole } = config;
+export const { backendUrl, dev, loginPageUrl, loginRedirectUrl, defaultLanguage, mobileConsole, multiDevicePreview } = config;

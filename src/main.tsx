@@ -1,13 +1,16 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import 'src/index.css'
+import 'src/scrollbar-white.css'
 import { loadClientSyncFunctions } from 'src/_functions/serverRequest'
 import VConsole from 'vconsole';
-import { mobileConsole } from '../config'
+import { mobileConsole, multiDevicePreview } from '../config'
 import UpdateLocation from 'src/_components/updateLocation'
 import { MenuHandlerProvider } from './_components/menuHandler'
+import Iphone15 from './_components/iphone15'
+import Laptop from './_components/laptop'
 
 const getRoutes = (pages: Record<string, { default: React.ComponentType }>) => {
   const routes = [];
@@ -44,16 +47,58 @@ await loadClientSyncFunctions();
 
 if (mobileConsole) { new VConsole(); }
 
+// const [maxWidth, setMaxWidth] = useState<number>(window.innerWidth)
+// useEffect(() => {
+//   const handleResize = () => {
+//     setMaxWidth(window.innerWidth)
+//   }
+  
+//   window.addEventListener('resize', handleResize)
+//   return () => window.removeEventListener('resize', handleResize)
+// }, [])
+
+const maxWidth = window.innerWidth;
+
 const root = document.getElementById("root");
 if (root) {
-  createRoot(root).render(
-    <StrictMode>
-      <Toaster richColors />
-      <div className='w-full h-dvh m-0 p-0'>
-        <MenuHandlerProvider>
-          <RouterProvider router={router}/>
-        </MenuHandlerProvider>
-      </div>
-    </StrictMode>
-  );
+  if (!multiDevicePreview) {
+    createRoot(root).render(
+      <StrictMode>
+        <Toaster richColors />
+        <div className='w-full h-dvh m-0 p-0'>
+          <MenuHandlerProvider>
+            <RouterProvider router={router}/>
+          </MenuHandlerProvider>
+        </div>
+      </StrictMode>
+    );
+  } else {
+    createRoot(root).render(
+      <StrictMode>
+        <div className="h-dvh w-full flex justify-evenly gap-40 items-center bg-gray-400 overflow-auto">
+          <div className="@container min-w-[350px] max-w-[350px]">
+            <Iphone15>
+            {/* <Iphone15 maxWidth={(maxWidth/5)*2}> */}
+              <Toaster richColors />
+              {/* <div className='w-full h-full m-0 p-0'> */}
+                <MenuHandlerProvider>
+                  <RouterProvider router={router}/>
+                </MenuHandlerProvider>
+              {/* </div> */}
+            </Iphone15>
+          </div>
+          <div className="@container min-w-[900px] max-w-[900px]">
+            <Laptop>
+              <Toaster richColors />
+              {/* <div className='w-full h-full m-0 p-0'> */}
+                <MenuHandlerProvider>
+                  <RouterProvider router={router}/>
+                </MenuHandlerProvider>
+              {/* </div> */}
+            </Laptop>
+          </div>
+        </div>
+      </StrictMode>
+    )
+  }
 }

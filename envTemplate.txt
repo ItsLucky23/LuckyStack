@@ -1,5 +1,7 @@
 # NODE_ENV=production # development | production
 NODE_ENV=development # development | production
+# VITE_SESSION_BASED_TOKEN=false # when true we store the token in the sessionStorage wich allows you to upen multiple tabs at the same time and have different session data on there, if false we use cookies
+VITE_SESSION_BASED_TOKEN=false # when true we store the token in the sessionStorage wich allows you to upen multiple tabs at the same time and have different session data on there, if false we use cookies
 # SECURE=true # when true we use https else http, make sure your nginx server is configured to use https if this is set to true
 SECURE=false # when true we use https else http, make sure your nginx server is configured to use https if this is set to true
 

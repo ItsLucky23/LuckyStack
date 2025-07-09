@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { io, Socket } from 'socket.io-client';
 import tryCatch from 'src/_functions/tryCatch';
 import config, { dev, backendUrl } from "../../config";
+const env = import.meta.env;
 
 let socket: Socket | null = null;
 const abortControllers = new Map<string, AbortController>();
@@ -10,14 +11,27 @@ const abortControllerNames = ['get', 'fetch', 'load', 'is', 'has', 'list', 'all'
 (async () => {
   //* here we connect to the socket server
   const [socketError, socketHandler] = await tryCatch(async () => {
-    const socketInstance: Socket = io(backendUrl, {
+
+    const socketOptions = {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
       reconnectionAttempts: 5,
       autoConnect: true,
-      withCredentials: true
-    });
+      withCredentials: true,
+      auth: {}
+    }
+
+    if (env.VITE_SESSION_BASED_TOKEN == 'true') {
+      const token = sessionStorage.getItem('token') || 'test';
+      if (token) {
+        socketOptions.auth = { token };
+      }
+    }
+
+    console.log(socketOptions)
+
+    const socketInstance: Socket = io(backendUrl, socketOptions);
 
     socketInstance.on("connect", () => {
       console.log("Connected via WebSocket!");
@@ -57,7 +71,12 @@ const logout = async () => {
         },
         credentials: 'include'
     })
-    if (await response.text() == 'ok') { window.location.href = config.loginPageUrl; }
+    if (await response.text() == 'ok') { 
+      if (env.VITE_SESSION_BASED_TOKEN == 'true') {
+        sessionStorage.clear();
+      }
+      window.location.href = config.loginPageUrl; 
+    }
 }
 
 let responseIndex = 0;

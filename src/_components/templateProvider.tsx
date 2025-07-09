@@ -11,9 +11,9 @@ type Template = 'dashboard' | 'plain';
 function DashboardTemplate({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full h-full flex flex-row bg-white">
-      <div className="w-full h-full flex flex-col md:flex-row">
+      <div className="w-full h-full flex flex-col @md:flex-row">
         <Navbar/>
-        <div className="md:flex-grow h-full text-black bg-blue-50">
+        <div className="@md:flex-grow h-full text-black bg-blue-50">
           <Middleware>
             {children}
           </Middleware>

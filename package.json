@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/postcss": "^4.0.17",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",

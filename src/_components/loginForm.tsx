@@ -70,12 +70,15 @@ export default function LoginForm({ formType }: { formType: "login" | "register"
 
     notify.success(response.reason);
     setTimeout(() => {
+      if (response.newToken) {
+        sessionStorage.setItem("token", response.newToken);
+      }
       window.location.href = response.newToken ? config.loginRedirectUrl : config.loginPageUrl;
     }, 1000);
   };
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full overflow-y-auto flex items-center justify-center">
       <form
         onKeyDown={handleKeyDown}
         className="p-8 bg-white rounded-md text-black flex flex-col gap-10 max-w-[400px] w-full"

@@ -163,8 +163,15 @@ const ServerRequest = async (req: http.IncomingMessage, res: http.ServerResponse
       
     const location = process.env.DNS
 
-    res.setHeader("Set-Cookie", `token=${newToken}; ${cookieOptions}`);
-    res.writeHead(302, { Location: location }); // Redirect without exposing token in URL
+    if (process.env.VITE_SESSION_BASED_TOKEN == 'true') {
+      // server-side after OAuth success
+      res.writeHead(302, {
+        Location: `${process.env.DNS}?token=${newToken}`,
+      });
+    } else {
+      res.setHeader("Set-Cookie", `token=${newToken}; ${cookieOptions}`);
+      res.writeHead(302, { Location: location }); // Redirect without exposing token in URL
+    }
     return res.end();
 
   } else if (z.string().startsWith('/auth/logout').safeParse(routePath).success) {

@@ -209,7 +209,6 @@ export default function Navbar() {
 
   const [state, setState] = useState<'folded' | 'expended'>('folded');
   const [session, setSession] = useState<sessionLayout | null>(null); // use proper type if you have one
-  const [windowSize, setWindowSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
   const location = useLocation();
   // const router = useNavigate();
   const router = initializeRouter()
@@ -237,22 +236,27 @@ export default function Navbar() {
     clearPopups();
   }, [location.pathname]);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const [parentWidth, setParentWidth] = useState<number>(0);
+
   useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
+    const parent = ref.current?.parentElement;
+    if (!parent) return;
 
-    window.addEventListener('resize', handleResize);
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        setParentWidth(entry.contentRect.width);
+      }
+    });
 
-    handleResize(); 
-  }, [])
+    observer.observe(parent);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <>
-      {windowSize.width < 768 &&
+    <div ref={ref}>
+      {parentWidth < 768 &&
         <>
           <div className="w-full py-2 px-4 bg-white text-black flex justify-between items-center">
             <div className="flex gap-2 items-center">
@@ -282,9 +286,9 @@ export default function Navbar() {
           </div>
         </>
       }
-      <div className={`h-full bg-white text-gray-500 flex flex-col items-center md:py-4 transition-all duration-200 md:px-2 absolute z-20 md:z-0 md:relative
+      <div className={`h-full bg-white text-gray-500 flex flex-col items-center @md:py-4 transition-all duration-200 @md:px-2 absolute z-20 @md:z-0 @md:relative
         ${state == 'folded' ? 
-          'md:w-14 w-0 gap-3' : 
+          '@md:w-14 w-0 gap-3' : 
           'w-64 gap-1 px-2'
         }`}>
 
@@ -298,7 +302,7 @@ export default function Navbar() {
 
             return <NavbarItem key={index} pathname={location.pathname} item={item} state={state} setState={setState} session={session} router={router}/>
           })} */}
-          {(windowSize.width >= 768 || state === 'expended') && (
+          {(parentWidth >= 768 || state === 'expended') && (
             <>
               {/* Top items */}
               {navbarItems.filter(item => !item.bottom).map((item, index) => {
@@ -341,10 +345,10 @@ export default function Navbar() {
           )}
 
       </div>
-      <div className={`md:hidden flex absolute top-0 left-0 z-10 bg-black ${state != 'folded' ? 'opacity-80' : 'opacity-0 pointer-events-none'} transition-all duration-300 w-full h-full`}
+      <div className={`@md:hidden flex absolute top-0 left-0 z-10 bg-black ${state != 'folded' ? 'opacity-80' : 'opacity-0 pointer-events-none'} transition-all duration-300 w-full h-full`}
         onClick={() => { setState('folded') }}>
       </div>
-    </>
+    </div>
   )
 }
 

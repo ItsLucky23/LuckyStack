@@ -57,7 +57,11 @@ export default function loadSocket(httpServer: any) {
   io.on('connection', (socket) => {
 
     const cookie = socket.handshake.headers.cookie; // get the cookie from the socket connection
-    const token = cookie ? cookie.split("=")[1] : null; 
+    const sessionToken = socket.handshake.auth?.token;
+    const token = 
+      cookie && process.env.VITE_SESSION_BASED_TOKEN === 'false' ? cookie.split("=")[1] 
+      : sessionToken && process.env.VITE_SESSION_BASED_TOKEN === 'true'? sessionToken
+      : null; 
     console.log(`a user connected with token: ${token}`);
   
     socket.on('apiRequest', async (msg: apiMessage) => {
